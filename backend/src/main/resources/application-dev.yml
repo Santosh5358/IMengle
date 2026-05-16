@@ -1,24 +1,6 @@
 # ═══════════════════════════════════════════════════════════
-# AnonConnect - DEV Profile (MongoDB)
+# AnonConnect - DEV Profile (local development overrides)
 # ═══════════════════════════════════════════════════════════
-
-spring:
-  # ─── MongoDB Configuration ───────────────────────────────
-  data:
-    mongodb:
-      uri: ${MONGODB_URI:mongodb://localhost:27017/anonconnect}
-
-  # ─── Disable JPA and H2 Auto-Config ──────────────────────
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
-
-# ─── Dev matchmaking uses in-memory queue ─────────────────
-matchmaking:
-  use-redis: false
 
 logging:
   level:

@@ -3,51 +3,34 @@
 # ═══════════════════════════════════════════════════════════
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: anonconnect-backend
 
-  # ─── PostgreSQL ───────────────────────────────────────────
-  datasource:
-    url: jdbc:postgresql://localhost:5432/anonconnect
-    username: anonconnect
-    password: anonconnect_secret
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 20
-      minimum-idle: 5
-      idle-timeout: 30000
-      connection-timeout: 20000
-
-  # ─── JPA / Hibernate ─────────────────────────────────────
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-
-  # ─── Redis ────────────────────────────────────────────────
+  # ─── MongoDB Configuration ──────────────────────────────
   data:
-    redis:
-      host: localhost
-      port: 6379
-      password: redis_secret
-      timeout: 5000ms
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/anonconnect}
+
+  # ─── Disable JPA / DataSource / Redis Auto-Config ───────
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
 # ─── JWT Configuration ────────────────────────────────────
 jwt:
-  secret: c2VjdXJlLWp3dC1zZWNyZXQta2V5LWZvci1hbm9uY29ubmVjdC1wbGF0Zm9ybS0yMDI1
+  secret: ${JWT_SECRET:c2VjdXJlLWp3dC1zZWNyZXQta2V5LWZvci1hbm9uY29ubmVjdC1wbGF0Zm9ybS0yMDI1}
   expiration-ms: 86400000  # 24 hours
 
 # ─── Socket.IO Configuration ─────────────────────────────
 socketio:
   host: 0.0.0.0
-  port: 9092
+  port: ${SOCKETIO_PORT:9092}
 
 # ─── WebRTC STUN/TURN ────────────────────────────────────
 webrtc:
@@ -60,10 +43,14 @@ webrtc:
 
 # ─── Matchmaking ──────────────────────────────────────────
 matchmaking:
+  use-redis: false
   queue-key: matchmaking:queue
   timeout-seconds: 30
   max-queue-size: 10000
-  use-redis: true
+
+logging:
+  level:
+    com.anonconnect: ${LOG_LEVEL:INFO}
 
 # ─── Actuator ─────────────────────────────────────────────
 management:
@@ -74,10 +61,3 @@ management:
   endpoint:
     health:
       show-details: when-authorized
-
-# ─── Logging ──────────────────────────────────────────────
-logging:
-  level:
-    com.anonconnect: INFO
-    org.springframework.web: WARN
-    org.hibernate.SQL: WARN
