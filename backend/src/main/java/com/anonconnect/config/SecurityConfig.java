@@ -57,7 +57,9 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
             "http://localhost:4200",
             "http://localhost:80",
-            "https://imengle.onrender.com"
+            "https://imengle.onrender.com",
+            "https://imengle.netlify.app",
+            "https://www.imengle.netlify.app"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
