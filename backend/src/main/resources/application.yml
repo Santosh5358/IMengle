@@ -12,7 +12,7 @@ spring:
   # ─── MongoDB Configuration ──────────────────────────────
   data:
     mongodb:
-      uri: ${MONGODB_URI:mongodb://localhost:27017/anonconnect}
+      uri: ${MONGODB_URI}
 
   # ─── Disable JPA / DataSource / Redis Auto-Config ───────
   autoconfigure:
