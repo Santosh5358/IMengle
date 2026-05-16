@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --neon-cyan: #00dbe9;
+  --neon-violet: #d0bcff;
+  --neon-magenta: #ebb2ff;
+  --surface: #11131d;
+  --surface-container: #1d1f2a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--surface);
+  color: #e1e1f0;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* ─── Glassmorphism Utility ──────────────────────────── */
+@layer components {
+  .glass {
+    @apply bg-surface-container/60 backdrop-blur-[16px] border border-outline-variant/30 rounded-xl;
+  }
+
+  .glass-strong {
+    @apply bg-surface-container/80 backdrop-blur-[24px] border border-outline-variant/40 rounded-xl;
+  }
+
+  .neon-border-cyan {
+    border: 1px solid rgba(0, 219, 233, 0.3);
+    box-shadow: 0 0 15px rgba(0, 219, 233, 0.1), inset 0 0 15px rgba(0, 219, 233, 0.05);
+  }
+
+  .neon-border-violet {
+    border: 1px solid rgba(208, 188, 255, 0.3);
+    box-shadow: 0 0 15px rgba(208, 188, 255, 0.1), inset 0 0 15px rgba(208, 188, 255, 0.05);
+  }
+
+  .neon-glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 219, 233, 0.4), 0 0 60px rgba(0, 219, 233, 0.1);
+  }
+
+  .neon-glow-violet {
+    box-shadow: 0 0 20px rgba(208, 188, 255, 0.4), 0 0 60px rgba(208, 188, 255, 0.1);
+  }
+
+  .neon-text-cyan {
+    color: #00dbe9;
+    text-shadow: 0 0 10px rgba(0, 219, 233, 0.5);
+  }
+
+  .neon-text-violet {
+    color: #d0bcff;
+    text-shadow: 0 0 10px rgba(208, 188, 255, 0.5);
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 rounded-xl font-display font-semibold text-sm tracking-wider
+           bg-gradient-to-r from-neon-cyan to-secondary-container
+           text-on-secondary-container
+           hover:shadow-neon-cyan transition-all duration-300
+           active:scale-95;
+  }
+
+  .btn-danger {
+    @apply px-6 py-3 rounded-xl font-display font-semibold text-sm tracking-wider
+           bg-gradient-to-r from-error to-error-container
+           text-white
+           hover:shadow-lg transition-all duration-300
+           active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply px-6 py-3 rounded-xl font-display font-semibold text-sm tracking-wider
+           border border-outline-variant/40 text-on-surface
+           hover:bg-surface-container-high/50 transition-all duration-300
+           active:scale-95;
+  }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #11131d;
+}
+::-webkit-scrollbar-thumb {
+  background: #494454;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #958ea0;
+}
+
+/* ─── Animations ─────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.4s ease-out forwards;
+}

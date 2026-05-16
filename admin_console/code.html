@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#e1e2eb",
+                    "surface-container-highest": "#32353c",
+                    "tertiary-fixed": "#e9ddff",
+                    "on-primary-fixed": "#002022",
+                    "surface-tint": "#00dbe9",
+                    "on-secondary-fixed": "#320047",
+                    "surface-container-lowest": "#0b0e14",
+                    "on-primary-container": "#006970",
+                    "on-tertiary-fixed": "#23005b",
+                    "on-error": "#690005",
+                    "surface-container-high": "#272a31",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-low": "#191c22",
+                    "on-secondary": "#520072",
+                    "secondary-container": "#b600f8",
+                    "surface-bright": "#363940",
+                    "inverse-primary": "#006970",
+                    "on-surface": "#e1e2eb",
+                    "surface": "#10131a",
+                    "tertiary": "#faf3ff",
+                    "inverse-on-surface": "#2e3037",
+                    "on-primary": "#00363a",
+                    "on-surface-variant": "#b9cacb",
+                    "primary-fixed": "#7df4ff",
+                    "error": "#ffb4ab",
+                    "primary-fixed-dim": "#00dbe9",
+                    "primary-container": "#00f0ff",
+                    "on-tertiary-container": "#7213ff",
+                    "error-container": "#93000a",
+                    "secondary-fixed-dim": "#ebb2ff",
+                    "on-secondary-fixed-variant": "#74009f",
+                    "on-tertiary-fixed-variant": "#5700c9",
+                    "surface-variant": "#32353c",
+                    "tertiary-container": "#e1d2ff",
+                    "secondary-fixed": "#f8d8ff",
+                    "tertiary-fixed-dim": "#d1bcff",
+                    "surface-dim": "#10131a",
+                    "inverse-surface": "#e1e2eb",
+                    "outline": "#849495",
+                    "on-tertiary": "#3c0090",
+                    "background": "#10131a",
+                    "on-primary-fixed-variant": "#004f54",
+                    "primary": "#dbfcff",
+                    "outline-variant": "#3b494b",
+                    "secondary": "#ebb2ff",
+                    "surface-container": "#1d2026",
+                    "on-secondary-container": "#fff6fc"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "24px",
+                    "base": "8px",
+                    "container-margin-desktop": "40px",
+                    "container-margin-mobile": "20px",
+                    "gutter": "24px",
+                    "stack-lg": "48px",
+                    "stack-sm": "12px"
+            },
+            "fontFamily": {
+                    "display-lg-mobile": ["Montserrat"],
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-bloom-primary {
+            box-shadow: 0 0 20px rgba(0, 219, 233, 0.4);
+        }
+        .neon-bloom-secondary {
+            box-shadow: 0 0 20px rgba(182, 0, 248, 0.4);
+        }
+        .glass-stroke {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-40 bg-surface-container-low/80 backdrop-blur-2xl border-r border-white/5 flex flex-col py-stack-md shadow-2xl">
+<div class="px-6 mb-8">
+<h1 class="font-headline-md text-headline-md text-on-surface">Admin Console</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">Super User</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="bg-secondary-container text-on-secondary-container rounded-xl mx-2 flex items-center gap-3 p-3 Active: translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 mx-2 hover:bg-white/5 rounded-xl transition-all Active: translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 mx-2 hover:bg-white/5 rounded-xl transition-all Active: translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span>
+<span class="font-label-md text-label-md">Moderation</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 mx-2 hover:bg-white/5 rounded-xl transition-all Active: translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Users</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 mx-2 hover:bg-white/5 rounded-xl transition-all Active: translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">System</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-error-container text-on-error-container py-3 rounded-xl flex items-center justify-center gap-2 font-label-md text-label-md hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+                Quick Ban
+            </button>
+<div class="mt-4 border-t border-white/5 pt-4">
+<a class="text-on-surface-variant flex items-center gap-3 p-3 mx-2 hover:bg-white/5 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-container-margin-desktop min-h-screen">
+<!-- Header -->
+<header class="flex justify-between items-center mb-stack-lg">
+<div>
+<h2 class="font-display-lg text-display-lg tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary-fixed to-secondary-fixed">
+                    NeonStream Performance
+                </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Real-time system health and user oversight.</p>
+</div>
+<div class="flex items-center gap-stack-sm">
+<div class="glass-panel px-4 py-2 rounded-full flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim animate-pulse"></span>
+<span class="font-label-md text-label-md text-primary-fixed">Live Nodes: 1,204</span>
+</div>
+<img alt="Admin Avatar" class="w-12 h-12 rounded-full border border-primary-fixed/20" data-alt="A professional close-up portrait of a tech-savvy administrator in a high-tech environment. The lighting is dominated by soft teal and magenta hues from nearby screens, creating a futuristic professional aesthetic. The subject has a confident expression, wearing minimalist smart glasses that reflect the digital interface. The background is a sophisticated, blurred server room with rhythmic neon light patterns." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRWar5z2-27UX52aUXxkQecg3qwuJ-V_gmTe126e25FB2yfpRwkDEi52ioWNrd3WEMK0_EZ2XZjJ_-CY-0hsIghvEG8DI_pbD6HseU8KDsZdjjYqZ6vmkIVroYI8rbazzltjym6oltuWSQ_wVj27swpvv6fmCBV6dldm4o7WlB_-KvDGBZtK6BH2GfGTwC2RCxZl9ZAxIg8dKIH46G-CN73nIM8e_U9852KB69pyghMSFo2NHmoZdeKPFl0zxoxsd8PMWIL1FlivQ"/>
+</div>
+</header>
+<!-- Analytics Bento Grid -->
+<div class="grid grid-cols-12 gap-gutter mb-stack-lg">
+<!-- Real-time Chart Main Card -->
+<div class="col-span-8 glass-panel rounded-3xl p-stack-md flex flex-col relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-fixed via-secondary-fixed to-transparent opacity-50"></div>
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md">Concurrent Streams</h3>
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded-full bg-white/5 font-label-sm text-label-sm text-on-surface-variant">24h</span>
+<span class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm">Live</span>
+</div>
+</div>
+<!-- Visual Placeholder for Chart -->
+<div class="flex-1 flex items-end gap-2 h-48 px-2">
+<div class="flex-1 bg-primary-fixed-dim/20 rounded-t-lg border-t border-primary-fixed-dim/40 h-[40%] transition-all hover:h-[45%]"></div>
+<div class="flex-1 bg-primary-fixed-dim/20 rounded-t-lg border-t border-primary-fixed-dim/40 h-[65%] transition-all hover:h-[70%]"></div>
+<div class="flex-1 bg-primary-fixed-dim/20 rounded-t-lg border-t border-primary-fixed-dim/40 h-[55%] transition-all hover:h-[60%]"></div>
+<div class="flex-1 bg-secondary-fixed-dim/20 rounded-t-lg border-t border-secondary-fixed-dim/40 h-[85%] transition-all hover:h-[90%] neon-bloom-secondary"></div>
+<div class="flex-1 bg-primary-fixed-dim/20 rounded-t-lg border-t border-primary-fixed-dim/40 h-[70%] transition-all hover:h-[75%]"></div>
+<div class="flex-1 bg-primary-fixed-dim/20 rounded-t-lg border-t border-primary-fixed-dim/40 h-[95%] transition-all hover:h-[100%] neon-bloom-primary"></div>
+<div class="flex-1 bg-primary-fixed-dim/20 rounded-t-lg border-t border-primary-fixed-dim/40 h-[80%] transition-all hover:h-[85%]"></div>
+</div>
+</div>
+<!-- Stats Column -->
+<div class="col-span-4 grid grid-rows-2 gap-gutter">
+<div class="glass-panel rounded-3xl p-stack-md flex flex-col justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Avg. Connection Time</p>
+<h4 class="font-display-lg text-4xl mt-2 text-primary-fixed">1.2s</h4>
+</div>
+<div class="flex items-center gap-2 text-primary-fixed-dim">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span class="font-label-sm text-label-sm">12% faster than yesterday</span>
+</div>
+</div>
+<div class="glass-panel rounded-3xl p-stack-md flex flex-col justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Report Density</p>
+<h4 class="font-display-lg text-4xl mt-2 text-error">0.04%</h4>
+</div>
+<div class="flex items-center gap-2 text-error">
+<span class="material-symbols-outlined text-sm" data-icon="trending_down">trending_down</span>
+<span class="font-label-sm text-label-sm">Down 2% from last hour</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Moderation Section -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Moderation Queue -->
+<div class="col-span-8">
+<div class="flex items-center justify-between mb-stack-sm">
+<h3 class="font-headline-md text-headline-md">Moderation Queue</h3>
+<button class="text-primary-fixed font-label-md text-label-md flex items-center gap-2 hover:underline">
+                        View All Reports
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Report Item 1 -->
+<div class="glass-panel p-4 rounded-2xl flex items-center gap-6 group hover:border-primary-fixed/30 transition-colors">
+<div class="relative w-24 h-16 rounded-xl overflow-hidden bg-surface-container-highest">
+<img alt="Video Snapshot" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" data-alt="A low-light snapshot of a person live streaming in a room filled with colorful LED strips. The atmosphere is energetic and chaotic, with various neon signs reflecting off surfaces. The image captures the high-contrast, moody aesthetic of the NeonStream platform, using deep purples and blues as primary tones. The subject is slightly motion-blurred to suggest a dynamic live interaction." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9hDVbrTFxfHvtFD9pKSbea1ltNNOqlIPUyipvZyj2PoKTtY20X2EzRZZJWrm-HmNMumzv9Anm91nh334S7gkdeLkMitvwlfpU5P9DSAITOa7ZwbJqm0ZqqQkRTGOwhaNU_Bu5U0FGlqPINEoyyLKXAZCsoT6GZFS6siQooVrBZ4UHiC9qOQ_jJQmDjiV8PVnYZ6fmg9kKQU9hnd-vO1sSaUy3XpOd1SK8lXuIJcFHQAu7NafH0Zp7hIYHO1CfPXcu1Hv5b-kj5J0"/>
+<div class="absolute inset-0 bg-error/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="warning">warning</span>
+</div>
+</div>
+<div class="flex-1">
+<h5 class="font-label-md text-label-md text-on-surface">User: @neon_rebel</h5>
+<p class="font-body-md text-sm text-on-surface-variant">Reported for: Inappropriate Content</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-on-surface-variant transition-colors" title="Dismiss">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<button class="p-2 rounded-xl bg-error-container text-on-error-container neon-bloom-secondary transition-transform Active: scale-95" title="Suspend Account">
+<span class="material-symbols-outlined" data-icon="block">block</span>
+</button>
+<button class="px-4 py-2 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md neon-bloom-primary transition-transform Active: scale-95">
+                                Review Live
+                            </button>
+</div>
+</div>
+<!-- Report Item 2 -->
+<div class="glass-panel p-4 rounded-2xl flex items-center gap-6 group hover:border-primary-fixed/30 transition-colors">
+<div class="relative w-24 h-16 rounded-xl overflow-hidden bg-surface-container-highest">
+<img alt="Video Snapshot" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" data-alt="A close-up high-contrast image of a digital user avatar in a minimalist neon interface. The lighting is a stark cyan from the side, creating deep shadows. The aesthetic is clean yet cybernetic, fitting a futuristic social discovery app. The background is a dark, textured surface that absorbs the light, focusing all attention on the glowing facial features of the avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCStBV9yWO-26T54EpV5c1r22-0ya2ma_ElWlaYTKxA30Kq2lBua04_T3ueS-Xj9rjQg0h45JD2HAgvSAlTz--PQtVxZEEZuQovBULZSDMr8-NHogjvoh07aEF3mbIdBYrcOKjGDkye1ttjIlDqUyLBmTlyikf_Q2w2O6TSxgz3he35hTHef4sdkHvUyGDMUBb_4AQDazgMtBLaeAjuRiQqPhqeeRN5XRHdqPy0yuoPFSpDwatGQ5H2qCVYkh8poCLfBUOVKmAb_z4"/>
+<div class="absolute inset-0 bg-error/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="emergency">emergency</span>
+</div>
+</div>
+<div class="flex-1">
+<h5 class="font-label-md text-label-md text-on-surface">User: @cyber_vibe</h5>
+<p class="font-body-md text-sm text-on-surface-variant">Reported for: Harassment (Priority High)</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-on-surface-variant transition-colors" title="Dismiss">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<button class="p-2 rounded-xl bg-error-container text-on-error-container neon-bloom-secondary transition-transform Active: scale-95" title="Suspend Account">
+<span class="material-symbols-outlined" data-icon="block">block</span>
+</button>
+<button class="px-4 py-2 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md neon-bloom-primary transition-transform Active: scale-95">
+                                Review Live
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Ban/Unban Sidebar Interface -->
+<div class="col-span-4">
+<div class="glass-panel rounded-3xl p-stack-md flex flex-col h-full">
+<h3 class="font-headline-md text-headline-md mb-6">Action Terminal</h3>
+<div class="space-y-stack-md flex-1">
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant mb-2 block">Target User UID</label>
+<div class="relative">
+<input class="w-full bg-surface-container-high border-b-2 border-outline-variant focus:border-primary-fixed outline-none px-4 py-3 text-on-surface transition-all rounded-t-lg" placeholder="e.g. USER-9921-X" type="text"/>
+</div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant mb-2 block">Restriction Level</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 rounded-xl border border-outline-variant text-on-surface-variant font-label-sm text-label-sm hover:border-primary-fixed hover:text-primary-fixed transition-all">24h Shadow</button>
+<button class="px-3 py-2 rounded-xl border border-outline-variant text-on-surface-variant font-label-sm text-label-sm hover:border-primary-fixed hover:text-primary-fixed transition-all">7d Suspend</button>
+<button class="px-3 py-2 rounded-xl border border-outline-variant text-on-surface-variant font-label-sm text-label-sm hover:border-primary-fixed hover:text-primary-fixed transition-all">Device Ban</button>
+<button class="px-3 py-2 rounded-xl bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold">Permaban</button>
+</div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant mb-2 block">Reason Log</label>
+<textarea class="w-full bg-surface-container-high border border-outline-variant rounded-xl p-4 text-sm h-24 focus:border-primary-fixed outline-none transition-all resize-none" placeholder="Specify violation details..."></textarea>
+</div>
+</div>
+<button class="w-full py-4 bg-error-container text-on-error-container rounded-2xl font-headline-md text-lg mt-6 neon-bloom-secondary transition-transform Active: scale-95">
+                        Execute Restriction
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Global Footer -->
+<footer class="w-full py-stack-lg border-t border-surface-container-highest bg-surface-container-lowest mt-stack-lg ml-64">
+<div class="max-w-7xl mx-auto px-container-margin-desktop flex flex-col md:flex-row justify-between items-center gap-stack-md">
+<div class="font-headline-md text-headline-md text-primary">NeonStream</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md opacity-80 hover:opacity-100" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md opacity-80 hover:opacity-100" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md opacity-80 hover:opacity-100" href="#">Safety Guidelines</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md opacity-80 hover:opacity-100" href="#">Contact</a>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 NeonStream. The future of social discovery.</p>
+</div>
+</footer>
+</body></html>

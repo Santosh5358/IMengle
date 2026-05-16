@@ -1,0 +1,105 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = 'your-registry.azurecr.io'
+        IMAGE_TAG       = "${BUILD_NUMBER}"
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Backend: Build & Test') {
+            steps {
+                dir('backend') {
+                    sh './mvnw clean verify -B'
+                }
+            }
+            post {
+                always {
+                    junit 'backend/target/surefire-reports/**/*.xml'
+                }
+            }
+        }
+
+        stage('Frontend: Install & Build') {
+            steps {
+                dir('frontend') {
+                    sh 'npm ci'
+                    sh 'npm run build:prod'
+                }
+            }
+        }
+
+        stage('Docker: Build Images') {
+            parallel {
+                stage('Build Backend Image') {
+                    steps {
+                        dir('backend') {
+                            sh "docker build -t ${DOCKER_REGISTRY}/anonconnect-backend:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+                stage('Build Frontend Image') {
+                    steps {
+                        dir('frontend') {
+                            sh "docker build -t ${DOCKER_REGISTRY}/anonconnect-frontend:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Docker: Push Images') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-registry-creds',
+                                                  usernameVariable: 'DOCKER_USER',
+                                                  passwordVariable: 'DOCKER_PASS')]) {
+                    sh "echo ${DOCKER_PASS} | docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} --password-stdin"
+                    sh "docker push ${DOCKER_REGISTRY}/anonconnect-backend:${IMAGE_TAG}"
+                    sh "docker push ${DOCKER_REGISTRY}/anonconnect-frontend:${IMAGE_TAG}"
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh """
+                    kubectl set image deployment/backend \
+                      backend=${DOCKER_REGISTRY}/anonconnect-backend:${IMAGE_TAG} \
+                      -n anonconnect
+                    kubectl set image deployment/frontend \
+                      frontend=${DOCKER_REGISTRY}/anonconnect-frontend:${IMAGE_TAG} \
+                      -n anonconnect
+                    kubectl rollout status deployment/backend -n anonconnect --timeout=120s
+                    kubectl rollout status deployment/frontend -n anonconnect --timeout=120s
+                """
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo 'Pipeline failed!'
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        always {
+            cleanWs()
+        }
+    }
+}

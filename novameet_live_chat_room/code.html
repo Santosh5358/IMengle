@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-card {
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(208, 188, 255, 0.15);
+      background: linear-gradient(135deg, rgba(208, 188, 255, 0.08) 0%, rgba(208, 188, 255, 0.02) 100%);
+    }
+    .neon-glow-primary {
+      box-shadow: 0 0 25px rgba(160, 120, 255, 0.4);
+    }
+    .neon-glow-secondary {
+      box-shadow: 0 0 20px rgba(0, 203, 230, 0.4);
+    }
+    .video-mask {
+      mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+    }
+    .celestial-border {
+      position: relative;
+    }
+    .celestial-border::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(208, 188, 255, 0.3), transparent 50%, rgba(93, 230, 255, 0.3));
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "primary-fixed": "#e9ddff",
+                  "inverse-surface": "#e1e1f0",
+                  "outline-variant": "#494454",
+                  "on-secondary": "#00363e",
+                  "secondary-container": "#00cbe6",
+                  "secondary-fixed-dim": "#2fd9f4",
+                  "error-container": "#93000a",
+                  "on-secondary-container": "#00515d",
+                  "primary-container": "#a078ff",
+                  "primary": "#d0bcff",
+                  "tertiary-fixed-dim": "#ffafd3",
+                  "surface-container-low": "#191b26",
+                  "on-primary": "#3c0091",
+                  "secondary": "#5de6ff",
+                  "on-tertiary-fixed-variant": "#85145a",
+                  "on-primary-fixed": "#23005c",
+                  "surface-container": "#1d1f2a",
+                  "tertiary-fixed": "#ffd8e7",
+                  "on-background": "#e1e1f0",
+                  "on-error": "#690005",
+                  "surface": "#11131d",
+                  "primary-fixed-dim": "#d0bcff",
+                  "inverse-primary": "#6d3bd7",
+                  "on-surface": "#e1e1f0",
+                  "on-secondary-fixed": "#001f25",
+                  "secondary-fixed": "#a2eeff",
+                  "outline": "#958ea0",
+                  "error": "#ffb4ab",
+                  "surface-tint": "#d0bcff",
+                  "surface-container-highest": "#32343f",
+                  "on-error-container": "#ffdad6",
+                  "tertiary-container": "#e364a7",
+                  "inverse-on-surface": "#2e303b",
+                  "background": "#11131d",
+                  "surface-variant": "#32343f",
+                  "on-tertiary-container": "#560038",
+                  "on-secondary-fixed-variant": "#004e5a",
+                  "surface-bright": "#373844",
+                  "on-surface-variant": "#cbc3d7",
+                  "surface-dim": "#11131d",
+                  "surface-container-lowest": "#0c0e18",
+                  "on-tertiary-fixed": "#3d0026",
+                  "surface-container-high": "#282934",
+                  "on-tertiary": "#620040",
+                  "tertiary": "#ffafd3",
+                  "on-primary-container": "#340080",
+                  "on-primary-fixed-variant": "#5516be"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "stack-md": "24px",
+                  "base": "8px",
+                  "container-margin-desktop": "40px",
+                  "container-margin-mobile": "20px",
+                  "gutter": "24px",
+                  "stack-lg": "48px",
+                  "stack-sm": "12px",
+                  "md": "24px",
+                  "lg": "48px",
+                  "xs": "4px",
+                  "xl": "80px",
+                  "margin": "32px"
+          },
+          "fontFamily": {
+                  "label-md": ["Montserrat"],
+                  "label-sm": ["Montserrat"],
+                  "display-lg": ["Montserrat"],
+                  "headline-lg": ["Montserrat"],
+                  "body-lg": ["Montserrat"],
+                  "headline-lg-mobile": ["Montserrat"],
+                  "body-md": ["Montserrat"],
+                  "headline-md": ["Montserrat"]
+          },
+          "fontSize": {
+                  "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                  "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "500"}],
+                  "display-lg": ["56px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                  "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                  "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                  "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                  "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-background min-h-screen selection:bg-primary/30">
+<!-- TopAppBar Execution -->
+<header class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl border-b border-primary/10">
+<div class="flex justify-between items-center px-container-margin-desktop h-20 w-full">
+<div class="flex items-center gap-8">
+<span class="font-display-lg text-[32px] md:text-display-lg tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">NovaMeet</span>
+<nav class="hidden md:flex items-center gap-stack-md">
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1 transition-colors duration-200" href="#">Discover</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Safety</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Community</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Support</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="settings">settings</span>
+</div>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-label-md text-label-md neon-glow-primary active:scale-95 transition-transform">
+          Go Live
+        </button>
+<img alt="User profile" class="w-10 h-10 rounded-full border border-primary/30" data-alt="A professional high-end studio portrait of a stylish person with soft atmospheric lighting, designed for a premium social app interface. The background is a deep, immersive dark theme with subtle neon accents in cyan and magenta to match the sophisticated futuristic aesthetic of the NovaMeet platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjtPZJ-3rO06w0kzHb09hhNmJOyLCKnZRTD7HJ7kkyffm5K3nR8sxegAhVXuvQM3lXRgFSlzJr40Nxk4mkR-gZpkIHOOMNv_xqMvwQuYvcnrknviHYECX3hgtqgyefS0QRszE5TAsVC_nB6gYIwkIBlb1YzppjmImVd6-8R6Ng5MGMIJrtiUUKcRr6kCgXUICyb06EUZDlYUVDNdreg2NUHCax3Rys8y0JnkcTZEMqfZ3hVfs7XqJyagxr2nnBhmF7BABFwBFrlhw"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-stack-lg px-container-margin-desktop min-h-screen flex flex-col md:flex-row gap-gutter">
+<!-- Video Section: Dual Panels -->
+<section class="flex-1 flex flex-col gap-gutter">
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-gutter h-full max-h-[750px]">
+<!-- Stranger Video (Primary) -->
+<div class="relative glass-card celestial-border rounded-3xl overflow-hidden group shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+<img class="w-full h-full object-cover video-mask" data-alt="A cinematic close-up of a diverse young person in a room lit with vibrant purple and cyan neon lights. The atmosphere is energetic and spontaneous, characteristic of a high-quality live video stream. The aesthetic is futuristic and sophisticated, with soft background blur emphasizing the user's expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnTzCL4q5vVaR3eKWXfwF5DGtt6YvBoCk_OGVQz6XjoiQ3rCK2DFm1Vf8gh0ABkHaBsV3MBFC323buxee3o86-xL1vOYpbMPd8AMQEYYGwrdkirTz-eHZVQKhnS-dk434wKk_t-VTlxz8SiL86FCOIWZN_uJRYzAxs5Z18rTHzp4pkyzYhP77q1H9wtJ1KJdUlj2vOfoXkCbDwJ9opZDwpVg13CMiGBY0qVls5EHoIAhozwbW4iTBfGoDTKdMtBVexQrmOjrcF9wM"/>
+<!-- Overlays -->
+<div class="absolute top-4 left-4">
+<div class="bg-surface/80 px-3 py-1.5 rounded-full border border-primary/20 backdrop-blur-md shadow-[0_0_15px_rgba(160,120,255,0.3)]">
+<span class="font-label-sm text-label-sm text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse shadow-[0_0_8px_#ffb4ab]"></span>
+                LIVE • Stranger
+              </span>
+</div>
+</div>
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div class="space-y-1">
+<h3 class="font-headline-md text-headline-md text-white drop-shadow-lg">Alex, 22</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="location_on">location_on</span>
+                Berlin, Germany
+              </p>
+</div>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-error/20 transition-all">
+<span class="material-symbols-outlined text-error" data-icon="flag">flag</span>
+</button>
+<button class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-on-surface/10 transition-all">
+<span class="material-symbols-outlined text-white" data-icon="block">block</span>
+</button>
+</div>
+</div>
+</div>
+<!-- User Video (Self) -->
+<div class="relative glass-card celestial-border rounded-3xl overflow-hidden group shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+<img class="w-full h-full object-cover video-mask" data-alt="A stylish young man sitting in a dark room with subtle blue ambient lighting, captured through a high-definition webcam for a social discovery app. The mood is calm and authentic, with a refined glassmorphism UI overlaying the scene. The lighting creates sharp contours and a professional high-energy atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPUGQE_V-pU1XsCOd_7m0PhDkMe24ySnazeXDxw1oilJnyEmntyLuiXv02SW9FWXDzuv8sUwRtQpQj80vORuQqNA6wI9nagie9mSdPo6vHFoA5cc3IwMea0NQ1CCu3p35tucv2rvivwqiUIMjmHBGghaylUI99_WY6Bx7Wffi2am5rrUNfngo4Sfp_-8QX1NF8NPNqGS6RdrAk2z88KyA3Xk0uhVvYTHSUSju4eDXWR64eZzEyNLWxDcvD8sDC9_vMYHZmEcW5eb4"/>
+<div class="absolute top-4 left-4">
+<div class="bg-surface/80 px-3 py-1.5 rounded-full border border-secondary/20 backdrop-blur-md">
+<span class="font-label-sm text-label-sm text-secondary">You</span>
+</div>
+</div>
+<div class="absolute bottom-6 left-6 right-6 flex justify-center gap-4">
+<button class="w-12 h-12 rounded-full glass-card flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-white" data-icon="mic">mic</span>
+</button>
+<button class="w-12 h-12 rounded-full glass-card flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-white" data-icon="videocam">videocam</span>
+</button>
+<button class="w-12 h-12 rounded-full glass-card flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-white" data-icon="screen_share">screen_share</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Controls Row -->
+<div class="flex items-center justify-center gap-stack-md mt-4">
+<button class="h-16 px-12 rounded-2xl bg-primary-container text-on-primary-container font-headline-md text-headline-md neon-glow-primary flex items-center gap-4 active:scale-95 transition-all">
+          NEXT STRANGER
+          <span class="material-symbols-outlined" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</button>
+<button class="h-16 w-16 rounded-2xl glass-card flex items-center justify-center text-on-surface-variant hover:text-white transition-all">
+<span class="material-symbols-outlined" data-icon="reorder">reorder</span>
+</button>
+</div>
+</section>
+<!-- Chat Bar (Side-mounted) -->
+<aside class="w-full md:w-[380px] flex flex-col bg-surface-container-low/95 glass-card rounded-3xl overflow-hidden border border-primary/5 h-[750px] shadow-xl">
+<div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container/50">
+<h2 class="font-headline-md text-headline-md text-white tracking-tight">Live Chat</h2>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Connected</span>
+</div>
+</div>
+<!-- Messages Area -->
+<div class="flex-1 overflow-y-auto p-6 space-y-md flex flex-col">
+<!-- System Message -->
+<div class="text-center">
+<span class="inline-block py-1.5 px-4 rounded-full bg-primary/10 border border-primary/5 font-label-sm text-label-sm text-primary">
+            You matched with Alex! Say hello.
+          </span>
+</div>
+<!-- Stranger Message -->
+<div class="flex flex-col items-start gap-1 max-w-[85%]">
+<div class="bg-surface-container-highest rounded-2xl rounded-tl-none p-4 shadow-sm">
+<p class="font-body-md text-body-md text-white leading-relaxed">Hey! Love your setup. Are those Philips Hue lights back there? 🌈</p>
+</div>
+<span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant/60 px-1">10:42 PM</span>
+</div>
+<!-- User Message -->
+<div class="flex flex-col items-end gap-1 self-end max-w-[85%]">
+<div class="bg-primary/20 border border-primary/30 rounded-2xl rounded-tr-none p-4 shadow-sm">
+<p class="font-body-md text-body-md text-white leading-relaxed">Haha thanks! Yeah, just set them up yesterday. Where are you from?</p>
+</div>
+<span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant/60 px-1 text-right">10:43 PM</span>
+</div>
+<!-- Stranger Message -->
+<div class="flex flex-col items-start gap-1 max-w-[85%]">
+<div class="bg-surface-container-highest rounded-2xl rounded-tl-none p-4 shadow-sm">
+<p class="font-body-md text-body-md text-white leading-relaxed">I'm in Berlin! It's raining like crazy here right now. 🌧️</p>
+</div>
+<span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant/60 px-1">10:43 PM</span>
+</div>
+</div>
+<!-- Input Field -->
+<div class="p-6 pt-0 bg-surface-container/30">
+<div class="relative group">
+<input class="w-full bg-transparent border-b-2 border-outline-variant focus:border-primary outline-none py-4 px-2 font-body-md text-body-md text-on-surface transition-all placeholder:text-on-surface-variant/40" placeholder="Type a message..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="send" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+<div class="flex gap-4 mt-4 text-on-surface-variant">
+<button class="material-symbols-outlined text-[20px] hover:text-primary" data-icon="mood">mood</button>
+<button class="material-symbols-outlined text-[20px] hover:text-primary" data-icon="attach_file">attach_file</button>
+<button class="material-symbols-outlined text-[20px] hover:text-primary" data-icon="gif">gif</button>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer Execution -->
+<footer class="w-full py-stack-lg bg-surface-container-lowest border-t border-surface-container-highest">
+<div class="max-w-7xl mx-auto px-container-margin-desktop flex flex-col md:flex-row justify-between items-center gap-stack-md">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-headline-md text-headline-md text-primary tracking-tight">NovaMeet</span>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 NovaMeet. The future of social discovery.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Terms</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Safety Guidelines</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Visible only on mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/80 backdrop-blur-xl border-t border-primary/10 h-16 flex justify-around items-center pb-safe">
+<div class="flex flex-col items-center justify-center text-primary drop-shadow-[0_0_8px_rgba(160,120,255,0.4)] active:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+<span class="font-label-sm text-label-sm">Match</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="font-label-sm text-label-sm">Chat</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Me</span>
+</div>
+</nav>
+</body></html>

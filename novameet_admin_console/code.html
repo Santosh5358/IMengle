@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#e9ddff",
+                    "inverse-surface": "#e1e1f0",
+                    "outline-variant": "#494454",
+                    "on-secondary": "#00363e",
+                    "secondary-container": "#00cbe6",
+                    "secondary-fixed-dim": "#2fd9f4",
+                    "error-container": "#93000a",
+                    "on-secondary-container": "#00515d",
+                    "primary-container": "#a078ff",
+                    "primary": "#d0bcff",
+                    "tertiary-fixed-dim": "#ffafd3",
+                    "surface-container-low": "#191b26",
+                    "on-primary": "#3c0091",
+                    "secondary": "#5de6ff",
+                    "on-tertiary-fixed-variant": "#85145a",
+                    "on-primary-fixed": "#23005c",
+                    "surface-container": "#1d1f2a",
+                    "tertiary-fixed": "#ffd8e7",
+                    "on-background": "#e1e1f0",
+                    "on-error": "#690005",
+                    "surface": "#11131d",
+                    "primary-fixed-dim": "#d0bcff",
+                    "inverse-primary": "#6d3bd7",
+                    "on-surface": "#e1e1f0",
+                    "on-secondary-fixed": "#001f25",
+                    "secondary-fixed": "#a2eeff",
+                    "outline": "#958ea0",
+                    "error": "#ffb4ab",
+                    "surface-tint": "#d0bcff",
+                    "surface-container-highest": "#32343f",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-container": "#e364a7",
+                    "inverse-on-surface": "#2e303b",
+                    "background": "#11131d",
+                    "surface-variant": "#32343f",
+                    "on-tertiary-container": "#560038",
+                    "on-secondary-fixed-variant": "#004e5a",
+                    "surface-bright": "#373844",
+                    "on-surface-variant": "#cbc3d7",
+                    "surface-dim": "#11131d",
+                    "surface-container-lowest": "#0c0e18",
+                    "on-tertiary-fixed": "#3d0026",
+                    "surface-container-high": "#282934",
+                    "on-tertiary": "#620040",
+                    "tertiary": "#ffafd3",
+                    "on-primary-container": "#340080",
+                    "on-primary-fixed-variant": "#5516be"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "24px",
+                    "base": "8px",
+                    "sm": "12px",
+                    "lg": "48px",
+                    "xs": "4px",
+                    "xl": "80px",
+                    "margin": "32px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "label-md": ["Montserrat"],
+                    "label-sm": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Montserrat"],
+                    "headline-lg-mobile": ["Montserrat"],
+                    "body-md": ["Montserrat"],
+                    "headline-md": ["Montserrat"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "500"}],
+                    "display-lg": ["56px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(208, 188, 255, 0.1);
+            background: rgba(29, 31, 42, 0.6);
+        }
+        .neon-glow-cyan {
+            box-shadow: 0 0 15px rgba(93, 230, 255, 0.3);
+        }
+        .neon-glow-violet {
+            box-shadow: 0 0 15px rgba(160, 120, 255, 0.3);
+        }
+        .galactic-bg {
+            background: radial-gradient(circle at top right, rgba(109, 59, 215, 0.1), transparent),
+                        radial-gradient(circle at bottom left, rgba(0, 203, 230, 0.05), transparent);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-background min-h-screen galactic-bg font-body-md">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-40 bg-surface-container-lowest/90 backdrop-blur-3xl border-r border-outline/10 flex flex-col py-md shadow-2xl">
+<div class="px-6 mb-8">
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">NovaMeet Admin</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant/70">Galactic Control</p>
+</div>
+<nav class="flex-1 space-y-2 px-3">
+<a class="bg-primary-container text-on-primary-container rounded-xl flex items-center gap-3 p-3 transition-all hover:brightness-110 shadow-lg shadow-primary-container/20" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Control Center</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-label-md text-label-md">Galaxy Metrics</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span>
+<span class="font-label-md text-label-md">Oversight</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Citizens</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Core Config</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-error text-on-error py-3 rounded-xl flex items-center justify-center gap-2 font-label-md text-label-md hover:saturate-150 transition-all shadow-lg shadow-error/20">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+            Expel User
+        </button>
+<div class="mt-4 border-t border-outline/10 pt-4">
+<a class="text-on-surface-variant flex items-center gap-3 p-3 mx-2 hover:bg-white/5 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Depart</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-margin min-h-screen">
+<!-- Header -->
+<header class="flex justify-between items-center mb-lg">
+<div>
+<h2 class="font-display-lg text-display-lg tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                NovaMeet Performance
+            </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Systems stable. Real-time galactic oversight active.</p>
+</div>
+<div class="flex items-center gap-sm">
+<div class="glass-panel px-4 py-2 rounded-full flex items-center gap-3 border border-secondary/20">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse neon-glow-cyan"></span>
+<span class="font-label-md text-label-md text-secondary">Active Hubs: 1,204</span>
+</div>
+<img alt="Admin Avatar" class="w-12 h-12 rounded-full border-2 border-primary/30" data-alt="A professional close-up portrait of a tech-savvy administrator in a high-tech environment. The lighting is dominated by soft teal and magenta hues from nearby screens, creating a futuristic professional aesthetic. The subject has a confident expression, wearing minimalist smart glasses that reflect the digital interface. The background is a sophisticated, blurred server room with rhythmic neon light patterns." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRWar5z2-27UX52aUXxkQecg3qwuJ-V_gmTe126e25FB2yfpRwkDEi52ioWNrd3WEMK0_EZ2XZjJ_-CY-0hsIghvEG8DI_pbD6HseU8KDsZdjjYqZ6vmkIVroYI8rbazzltjym6oltuWSQ_wVj27swpvv6fmCBV6dldm4o7WlB_-KvDGBZtK6BH2GfGTwC2RCxZl9ZAxIg8dKIH46G-CN73nIM8e_U9852KB69pyghMSFo2NHmoZdeKPFl0zxoxsd8PMWIL1FlivQ"/>
+</div>
+</header>
+<!-- Analytics Bento Grid -->
+<div class="grid grid-cols-12 gap-gutter mb-lg">
+<!-- Real-time Chart Main Card -->
+<div class="col-span-8 glass-panel rounded-3xl p-md flex flex-col relative overflow-hidden border border-primary/10">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary via-secondary to-transparent opacity-40"></div>
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline-md text-headline-md text-on-surface">Transmission Flux</h3>
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded-lg bg-surface-container-high font-label-sm text-label-sm text-on-surface-variant border border-outline/10">Cycle 24</span>
+<span class="px-3 py-1 rounded-lg bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold">Realtime</span>
+</div>
+</div>
+<!-- Visual Placeholder for Chart -->
+<div class="flex-1 flex items-end gap-3 h-52 px-2">
+<div class="flex-1 bg-secondary/10 rounded-t-xl border-t border-secondary/30 h-[40%] transition-all hover:h-[45%]"></div>
+<div class="flex-1 bg-secondary/10 rounded-t-xl border-t border-secondary/30 h-[65%] transition-all hover:h-[70%]"></div>
+<div class="flex-1 bg-secondary/10 rounded-t-xl border-t border-secondary/30 h-[55%] transition-all hover:h-[60%]"></div>
+<div class="flex-1 bg-primary/20 rounded-t-xl border-t border-primary/50 h-[85%] transition-all hover:h-[90%] neon-glow-violet"></div>
+<div class="flex-1 bg-secondary/10 rounded-t-xl border-t border-secondary/30 h-[70%] transition-all hover:h-[75%]"></div>
+<div class="flex-1 bg-secondary/30 rounded-t-xl border-t border-secondary/60 h-[95%] transition-all hover:h-[100%] neon-glow-cyan"></div>
+<div class="flex-1 bg-secondary/10 rounded-t-xl border-t border-secondary/30 h-[80%] transition-all hover:h-[85%]"></div>
+</div>
+</div>
+<!-- Stats Column -->
+<div class="col-span-4 grid grid-rows-2 gap-gutter">
+<div class="glass-panel rounded-3xl p-md flex flex-col justify-between border border-secondary/10">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant/80 uppercase tracking-wider">Sync Latency</p>
+<h4 class="font-display-lg text-4xl mt-2 text-secondary">1.2ms</h4>
+</div>
+<div class="flex items-center gap-2 text-secondary/80">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span class="font-label-sm text-label-sm">12% optimized since last cycle</span>
+</div>
+</div>
+<div class="glass-panel rounded-3xl p-md flex flex-col justify-between border border-error/10">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant/80 uppercase tracking-wider">Anomaly Rate</p>
+<h4 class="font-display-lg text-4xl mt-2 text-error">0.04%</h4>
+</div>
+<div class="flex items-center gap-2 text-error/80">
+<span class="material-symbols-outlined text-sm" data-icon="trending_down">trending_down</span>
+<span class="font-label-sm text-label-sm">Declining 2% hourly</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Moderation Section -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Moderation Queue -->
+<div class="col-span-8">
+<div class="flex items-center justify-between mb-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface">Incoming Reports</h3>
+<button class="text-primary font-label-md text-label-md flex items-center gap-2 hover:opacity-80 transition-all">
+                    Browse All Incidents
+                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Report Item 1 -->
+<div class="glass-panel p-4 rounded-2xl flex items-center gap-6 group hover:border-primary/40 transition-all border border-transparent">
+<div class="relative w-24 h-16 rounded-xl overflow-hidden bg-surface-container-highest">
+<img alt="Video Snapshot" class="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" data-alt="A low-light snapshot of a person live streaming in a room filled with colorful LED strips. The atmosphere is energetic and chaotic, with various neon signs reflecting off surfaces. The image captures the high-contrast, moody aesthetic of the NovaMeet platform, using deep purples and blues as primary tones. The subject is slightly motion-blurred to suggest a dynamic live interaction." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9hDVbrTFxfHvtFD9pKSbea1ltNNOqlIPUyipvZyj2PoKTtY20X2EzRZZJWrm-HmNMumzv9Anm91nh334S7gkdeLkMitvwlfpU5P9DSAITOa7ZwbJqm0ZqqQkRTGOwhaNU_Bu5U0FGlqPINEoyyLKXAZCsoT6GZFS6siQooVrBZ4UHiC9qOQ_jJQmDjiV8PVnYZ6fmg9kKQU9hnd-vO1sSaUy3XpOd1SK8lXuIJcFHQAu7NafH0Zp7hIYHO1CfPXcu1Hv5b-kj5J0"/>
+<div class="absolute inset-0 bg-error/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+</div>
+</div>
+<div class="flex-1">
+<h5 class="font-label-md text-label-md text-on-surface">Citizen: @nova_prime</h5>
+<p class="font-body-md text-sm text-on-surface-variant">Violation: Visual Disturbance</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-xl hover:bg-white/10 text-on-surface-variant transition-colors" title="Archive">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<button class="p-2 rounded-xl bg-error/10 text-error hover:bg-error/20 transition-all" title="Suspend Citizen">
+<span class="material-symbols-outlined" data-icon="block">block</span>
+</button>
+<button class="px-4 py-2 rounded-xl bg-secondary-container text-on-secondary-container font-label-md text-label-md transition-all hover:brightness-110 shadow-lg shadow-secondary/10">
+                            Intercept Hub
+                        </button>
+</div>
+</div>
+<!-- Report Item 2 -->
+<div class="glass-panel p-4 rounded-2xl flex items-center gap-6 group hover:border-primary/40 transition-all border border-transparent">
+<div class="relative w-24 h-16 rounded-xl overflow-hidden bg-surface-container-highest">
+<img alt="Video Snapshot" class="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" data-alt="A close-up high-contrast image of a digital user avatar in a minimalist neon interface. The lighting is a stark cyan from the side, creating deep shadows. The aesthetic is clean yet cybernetic, fitting a futuristic social discovery app. The background is a dark, textured surface that absorbs the light, focusing all attention on the glowing facial features of the avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCStBV9yWO-26T54EpV5c1r22-0ya2ma_ElWlaYTKxA30Kq2lBua04_T3ueS-Xj9rjQg0h45JD2HAgvSAlTz--PQtVxZEEZuQovBULZSDMr8-NHogjvoh07aEF3mbIdBYrcOKjGDkye1ttjIlDqUyLBmTlyikf_Q2w2O6TSxgz3he35hTHef4sdkHvUyGDMUBb_4AQDazgMtBLaeAjuRiQqPhqeeRN5XRHdqPy0yuoPFSpDwatGQ5H2qCVYkh8poCLfBUOVKmAb_z4"/>
+<div class="absolute inset-0 bg-error/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-error" data-icon="emergency">emergency</span>
+</div>
+</div>
+<div class="flex-1">
+<h5 class="font-label-md text-label-md text-on-surface">Citizen: @nebula_spark</h5>
+<p class="font-body-md text-sm text-on-surface-variant">Violation: Verbal Interference (High Priority)</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-xl hover:bg-white/10 text-on-surface-variant transition-colors" title="Archive">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<button class="p-2 rounded-xl bg-error/10 text-error hover:bg-error/20 transition-all" title="Suspend Citizen">
+<span class="material-symbols-outlined" data-icon="block">block</span>
+</button>
+<button class="px-4 py-2 rounded-xl bg-secondary-container text-on-secondary-container font-label-md text-label-md transition-all hover:brightness-110 shadow-lg shadow-secondary/10">
+                            Intercept Hub
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Terminal -->
+<div class="col-span-4">
+<div class="glass-panel rounded-3xl p-md flex flex-col h-full border border-primary/10">
+<h3 class="font-headline-md text-headline-md mb-6 text-on-surface">Action Terminal</h3>
+<div class="space-y-md flex-1">
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant/80 mb-2 block uppercase tracking-tight">Citizen UID</label>
+<div class="relative">
+<input class="w-full bg-surface-container-high/40 border border-outline/20 focus:border-secondary outline-none px-4 py-3 text-on-surface transition-all rounded-xl placeholder:text-on-surface-variant/30" placeholder="e.g. NOVA-SYNC-88" type="text"/>
+</div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant/80 mb-2 block uppercase tracking-tight">Containment Level</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 rounded-xl border border-outline/20 text-on-surface-variant font-label-sm text-label-sm hover:border-secondary hover:text-secondary transition-all">24h Shadow</button>
+<button class="px-3 py-2 rounded-xl border border-outline/20 text-on-surface-variant font-label-sm text-label-sm hover:border-secondary hover:text-secondary transition-all">7d Suspend</button>
+<button class="px-3 py-2 rounded-xl border border-outline/20 text-on-surface-variant font-label-sm text-label-sm hover:border-secondary hover:text-secondary transition-all">Node Ban</button>
+<button class="px-3 py-2 rounded-xl bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold shadow-lg shadow-primary/10">Permadelete</button>
+</div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant/80 mb-2 block uppercase tracking-tight">Incident Log</label>
+<textarea class="w-full bg-surface-container-high/40 border border-outline/20 rounded-xl p-4 text-sm h-28 focus:border-secondary outline-none transition-all resize-none placeholder:text-on-surface-variant/30" placeholder="Document system violation details..."></textarea>
+</div>
+</div>
+<button class="w-full py-4 bg-error text-on-error rounded-2xl font-headline-md text-lg mt-6 shadow-xl shadow-error/20 hover:brightness-125 transition-all">
+                    Execute Restriction
+                </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Global Footer -->
+<footer class="w-full py-lg border-t border-outline/10 bg-surface-container-lowest/50 backdrop-blur-xl mt-xl ml-64">
+<div class="max-w-7xl mx-auto px-margin flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="font-headline-md text-headline-md text-primary tracking-tight">NovaMeet</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md opacity-80" href="#">Privacy Protocol</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md opacity-80" href="#">Engagement Terms</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md opacity-80" href="#">Safety Matrix</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md opacity-80" href="#">Tech Support</a>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant/60">© 2024 NovaMeet. The frontier of human connection.</p>
+</div>
+</footer>
+</body></html>

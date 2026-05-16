@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NovaMeet | Celestial Connections</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#e9ddff",
+                    "inverse-surface": "#e1e1f0",
+                    "outline-variant": "#494454",
+                    "on-secondary": "#00363e",
+                    "secondary-container": "#00cbe6",
+                    "secondary-fixed-dim": "#2fd9f4",
+                    "error-container": "#93000a",
+                    "on-secondary-container": "#00515d",
+                    "primary-container": "#a078ff",
+                    "primary": "#d0bcff",
+                    "tertiary-fixed-dim": "#ffafd3",
+                    "surface-container-low": "#191b26",
+                    "on-primary": "#3c0091",
+                    "secondary": "#5de6ff",
+                    "on-tertiary-fixed-variant": "#85145a",
+                    "on-primary-fixed": "#23005c",
+                    "surface-container": "#1d1f2a",
+                    "tertiary-fixed": "#ffd8e7",
+                    "on-background": "#e1e1f0",
+                    "on-error": "#690005",
+                    "surface": "#11131d",
+                    "primary-fixed-dim": "#d0bcff",
+                    "inverse-primary": "#6d3bd7",
+                    "on-surface": "#e1e1f0",
+                    "on-secondary-fixed": "#001f25",
+                    "secondary-fixed": "#a2eeff",
+                    "outline": "#958ea0",
+                    "error": "#ffb4ab",
+                    "surface-tint": "#d0bcff",
+                    "surface-container-highest": "#32343f",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-container": "#e364a7",
+                    "inverse-on-surface": "#2e303b",
+                    "background": "#11131d",
+                    "surface-variant": "#32343f",
+                    "on-tertiary-container": "#560038",
+                    "on-secondary-fixed-variant": "#004e5a",
+                    "surface-bright": "#373844",
+                    "on-surface-variant": "#cbc3d7",
+                    "surface-dim": "#11131d",
+                    "surface-container-lowest": "#0c0e18",
+                    "on-tertiary-fixed": "#3d0026",
+                    "surface-container-high": "#282934",
+                    "on-tertiary": "#620040",
+                    "tertiary": "#ffafd3",
+                    "on-primary-container": "#340080",
+                    "on-primary-fixed-variant": "#5516be"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "24px",
+                    "base": "8px",
+                    "sm": "12px",
+                    "lg": "48px",
+                    "xs": "4px",
+                    "xl": "80px",
+                    "margin": "32px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "label-md": ["Montserrat"],
+                    "label-sm": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Montserrat"],
+                    "headline-lg-mobile": ["Montserrat"],
+                    "body-md": ["Montserrat"],
+                    "headline-md": ["Montserrat"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "500"}],
+                    "display-lg": ["56px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .neon-bloom {
+            box-shadow: 0 0 25px 2px rgba(208, 188, 255, 0.4);
+        }
+        .glass-card {
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(109, 59, 215, 0.15) 0%, rgba(0, 203, 230, 0.1) 50%, rgba(17, 19, 29, 1) 100%);
+        }
+        .celestial-glow {
+            filter: drop-shadow(0 0 10px rgba(93, 230, 255, 0.5));
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+<header class="fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-2xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)] h-20 flex justify-between items-center px-margin">
+<div class="flex items-center gap-base">
+<span class="font-display-lg text-headline-lg tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary celestial-glow">NovaMeet</span>
+</div>
+<nav class="hidden md:flex items-center gap-md">
+<a class="font-label-md text-label-md text-primary-fixed-dim border-b-2 border-primary-fixed-dim pb-1 hover:text-primary transition-colors duration-200" href="#">Discovery</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Orbits</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Galaxy</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Support</a>
+</nav>
+<div class="flex items-center gap-sm">
+<button class="hidden lg:flex items-center gap-2 px-6 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md active:scale-95 transition-all neon-bloom">
+                Launch Live
+            </button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-secondary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-secondary transition-colors" data-icon="settings">settings</span>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/20">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArcU1_H3Xt9irRayn2aePu7ANGmflJx4kSP3uXcPfF76ePWfKe_X_tJx-K8I6wVcLM75VPJTaT4fvJLgGdJBON9f3Me5wTkcRqGbm28dRwQR7kUmGiSAKAjK8QmGil6SyuiAT7AfkCzer1Mby14RRmdCGOm194WOcqOyy06utsJpJJ9UhB8LTCs1TVkYCQudJDZf2IgVHsgI4fNA-t0veRTWtz9vb5VqiGC2gIfV2MN-XGznnoY0Q2VQN9jjjL0w1JXrfgrLVBzyk"/>
+</div>
+</div>
+</header>
+<main class="flex-grow pt-20">
+<section class="relative h-[85vh] flex flex-col items-center justify-center overflow-hidden hero-gradient px-4 md:px-margin text-center">
+<div class="absolute inset-0 z-0 opacity-50">
+<div class="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-primary-container/10 rounded-full blur-[140px] animate-pulse"></div>
+<div class="absolute bottom-1/4 right-1/3 w-[500px] h-[500px] bg-secondary-container/10 rounded-full blur-[140px] animate-pulse" style="animation-delay: 2s;"></div>
+</div>
+<div class="relative z-10 max-w-5xl space-y-md">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+</span>
+<span class="font-label-md text-label-md text-secondary">2.4M Souls Synchronized</span>
+</div>
+<h1 class="font-display-lg text-headline-lg-mobile md:text-display-lg text-on-surface tracking-tight">
+                    Celestial <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">Connections</span><br/>in the Digital Age
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl mx-auto opacity-90">
+                    Transcend traditional boundaries. NovaMeet uses quantum-speed matchmaking to unite creators and communities in a refined, atmospheric digital expanse.
+                </p>
+<div class="flex flex-col md:flex-row items-center justify-center gap-sm pt-base">
+<button class="w-full md:w-auto px-12 py-5 rounded-2xl bg-gradient-to-r from-primary to-secondary-container text-on-primary font-headline-md text-headline-md neon-bloom active:scale-95 transition-all">
+                        Begin Odyssey
+                    </button>
+<button class="w-full md:w-auto px-12 py-5 rounded-2xl glass-card text-on-surface font-headline-md text-headline-md hover:bg-white/10 active:scale-95 transition-all">
+                        View Heavens
+                    </button>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background via-background/50 to-transparent z-10"></div>
+</section>
+<section class="py-xl px-margin bg-background">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="glass-card p-md rounded-2xl space-y-base group hover:border-secondary/40 transition-all cursor-default">
+<span class="material-symbols-outlined text-secondary text-4xl celestial-glow" data-icon="auto_awesome">auto_awesome</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Synchronicity</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Our celestial engine aligns you with the perfect community pulse instantly.</p>
+</div>
+<div class="glass-card p-md rounded-2xl space-y-base group hover:border-primary/40 transition-all cursor-default">
+<span class="material-symbols-outlined text-primary text-4xl celestial-glow" data-icon="shield_with_heart">shield_with_heart</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Pure Atmosphere</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Sophisticated moderation keeps your social orbit safe, serene, and strictly human.</p>
+</div>
+<div class="glass-card p-md rounded-2xl space-y-base group hover:border-secondary/40 transition-all cursor-default">
+<span class="material-symbols-outlined text-secondary text-4xl celestial-glow" data-icon="videocam">videocam</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Ethereal Quality</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Ultra-low latency streaming that captures the subtle essence of every interaction.</p>
+</div>
+</div>
+</section>
+<section class="py-xl px-margin">
+<div class="grid grid-cols-12 gap-gutter">
+<div class="col-span-12 md:col-span-8 h-[500px] relative rounded-[32px] overflow-hidden glass-card">
+<img alt="Atmospheric celestial social gathering" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4F7zoBSrkdEPUxwMAYbuhDiGx6nVNux1IV3tAZe62p4vPDlqpssokHoVyZJrq0d8pN4W1wu1SkprbCNzQyUCCYQs_H4vRMwHDBhJ7KeMwpw1dWvltZhzQR-ZQJ9cV7-uf_adCOPmxF3dO_LT6f1iRkAS2n3yxzoA2LlzL7u8MTnK4-vFcWBeTtvaI7naSxQgwHOLHO57Cv5z01Zc5JFwmdAqf0jjxZ0nZFPDlnm2J6qMfPps0qGpUKPTSLFAld3TWV5hVUOH6rOU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent flex flex-col justify-end p-md">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-3 py-1 bg-secondary text-on-secondary rounded-full font-label-sm text-label-sm uppercase tracking-widest">Orbiting</span>
+<span class="font-label-md text-label-md text-white drop-shadow-md">Luna Nova</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-white">Midnight Meditation: Guided Galaxy Drift</h2>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 grid grid-rows-2 gap-gutter">
+<div class="relative rounded-[32px] overflow-hidden glass-card">
+<img alt="Cosmic networking" class="w-full h-full object-cover opacity-40 hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwnKH1t3q8UEJqJTHd0450j6VAXVNIvcqrC81H-S9_9RZtCHDYkw50PV9f6_FBx2jYeqjF_S4aXLIlT434vqP8xhYqcb8SXPOImV3jjOu3msqPTMNycXQzJAs1zTMePJ1hO1E1JMdJTT0I67thz1E1LwbTRcb2vL_a8DTa7486A9GSyBAEhtZYYeDx3G2hyvmP_ZhL7nMjU-w-DXlxUnTf5CqyxyFQEO_xR2mOZqtC9vztLsTrqjelhlX4klcP70TSAnk9uSdm4fU"/>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center p-md">
+<h3 class="font-headline-md text-headline-md text-on-surface">Galaxy Clusters</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Find your constellation of creators.</p>
+</div>
+</div>
+<div class="relative rounded-[32px] overflow-hidden glass-card bg-surface-container-high flex flex-col justify-center items-center p-md text-center group">
+<span class="material-symbols-outlined text-secondary text-6xl mb-4 group-hover:scale-110 transition-transform celestial-glow" data-icon="star">star</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Stellar Verification</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Authored by humans, for humans. Elevate your status.</p>
+<button class="mt-6 font-label-md text-label-md text-secondary border-b border-secondary/30 hover:border-secondary pb-1 transition-all">Verify Essence</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-surface-container-lowest w-full py-xl border-t border-white/5">
+<div class="max-w-7xl mx-auto px-margin flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-headline-md text-headline-md text-secondary celestial-glow">NovaMeet</span>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">© 2024 NovaMeet. Your social horizon, expanded.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-gutter">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Ethics</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Protocols</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary transition-colors" href="#">The Void</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Contact</a>
+</div>
+<div class="flex gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors cursor-pointer" data-icon="language">language</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors cursor-pointer" data-icon="hub">hub</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors cursor-pointer" data-icon="stream">stream</span>
+</div>
+</div>
+</footer>
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-3xl bg-surface-container-lowest/80 backdrop-blur-2xl border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] h-20 flex justify-around items-center pb-safe">
+<div class="flex flex-col items-center justify-center text-secondary celestial-glow">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-secondary">
+<span class="material-symbols-outlined" data-icon="radar">radar</span>
+<span class="font-label-sm text-label-sm">Orbits</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-secondary">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span class="font-label-sm text-label-sm">Comms</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-secondary">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label-sm text-label-sm">Self</span>
+</div>
+</nav>
+</body></html>

@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: anonconnect
+data:
+  SPRING_PROFILES_ACTIVE: "production"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-svc:5432/anonconnect"
+  SPRING_DATA_REDIS_HOST: "redis-svc"
+  SPRING_DATA_REDIS_PORT: "6379"
+  SOCKETIO_HOST: "0.0.0.0"
+  SOCKETIO_PORT: "9092"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secrets
+  namespace: anonconnect
+type: Opaque
+stringData:
+  SPRING_DATASOURCE_USERNAME: "anonconnect"
+  SPRING_DATASOURCE_PASSWORD: "change-in-production"
+  SPRING_DATA_REDIS_PASSWORD: "change-in-production"
+  JWT_SECRET: "Y2hhbmdlLXRoaXMtaW4tcHJvZHVjdGlvbi11c2UtYS1yZWFsLXNlY3JldC1rZXk="

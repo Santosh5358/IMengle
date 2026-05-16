@@ -1,0 +1,83 @@
+# ═══════════════════════════════════════════════════════════
+# AnonConnect - Application Configuration
+# ═══════════════════════════════════════════════════════════
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: anonconnect-backend
+
+  # ─── PostgreSQL ───────────────────────────────────────────
+  datasource:
+    url: jdbc:postgresql://localhost:5432/anonconnect
+    username: anonconnect
+    password: anonconnect_secret
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 20000
+
+  # ─── JPA / Hibernate ─────────────────────────────────────
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  # ─── Redis ────────────────────────────────────────────────
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redis_secret
+      timeout: 5000ms
+
+# ─── JWT Configuration ────────────────────────────────────
+jwt:
+  secret: c2VjdXJlLWp3dC1zZWNyZXQta2V5LWZvci1hbm9uY29ubmVjdC1wbGF0Zm9ybS0yMDI1
+  expiration-ms: 86400000  # 24 hours
+
+# ─── Socket.IO Configuration ─────────────────────────────
+socketio:
+  host: 0.0.0.0
+  port: 9092
+
+# ─── WebRTC STUN/TURN ────────────────────────────────────
+webrtc:
+  stun-servers:
+    - stun:stun.l.google.com:19302
+    - stun:stun1.l.google.com:19302
+  turn-server: turn:your-turn-server:3478
+  turn-username: anonconnect
+  turn-credential: turn_secret
+
+# ─── Matchmaking ──────────────────────────────────────────
+matchmaking:
+  queue-key: matchmaking:queue
+  timeout-seconds: 30
+  max-queue-size: 10000
+  use-redis: true
+
+# ─── Actuator ─────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# ─── Logging ──────────────────────────────────────────────
+logging:
+  level:
+    com.anonconnect: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN

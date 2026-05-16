@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .neon-glow-primary {
+      box-shadow: 0 0 40px rgba(208, 188, 255, 0.3);
+    }
+    .orbital-ring {
+      border: 1px solid rgba(208, 188, 255, 0.1);
+      border-radius: 50%;
+      position: absolute;
+    }
+    .orbital-path {
+      animation: rotate 10s linear infinite;
+    }
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .cosmic-pulse {
+      animation: pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "primary-fixed": "#e9ddff",
+                  "inverse-surface": "#e1e1f0",
+                  "outline-variant": "#494454",
+                  "on-secondary": "#00363e",
+                  "secondary-container": "#00cbe6",
+                  "secondary-fixed-dim": "#2fd9f4",
+                  "error-container": "#93000a",
+                  "on-secondary-container": "#00515d",
+                  "primary-container": "#a078ff",
+                  "primary": "#d0bcff",
+                  "tertiary-fixed-dim": "#ffafd3",
+                  "surface-container-low": "#191b26",
+                  "on-primary": "#3c0091",
+                  "secondary": "#5de6ff",
+                  "on-tertiary-fixed-variant": "#85145a",
+                  "on-primary-fixed": "#23005c",
+                  "surface-container": "#1d1f2a",
+                  "tertiary-fixed": "#ffd8e7",
+                  "on-background": "#e1e1f0",
+                  "on-error": "#690005",
+                  "surface": "#11131d",
+                  "primary-fixed-dim": "#d0bcff",
+                  "inverse-primary": "#6d3bd7",
+                  "on-surface": "#e1e1f0",
+                  "on-secondary-fixed": "#001f25",
+                  "secondary-fixed": "#a2eeff",
+                  "outline": "#958ea0",
+                  "error": "#ffb4ab",
+                  "surface-tint": "#d0bcff",
+                  "surface-container-highest": "#32343f",
+                  "on-error-container": "#ffdad6",
+                  "tertiary-container": "#e364a7",
+                  "inverse-on-surface": "#2e303b",
+                  "background": "#11131d",
+                  "surface-variant": "#32343f",
+                  "on-tertiary-container": "#560038",
+                  "on-secondary-fixed-variant": "#004e5a",
+                  "surface-bright": "#373844",
+                  "on-surface-variant": "#cbc3d7",
+                  "surface-dim": "#11131d",
+                  "surface-container-lowest": "#0c0e18",
+                  "on-tertiary-fixed": "#3d0026",
+                  "surface-container-high": "#282934",
+                  "on-tertiary": "#620040",
+                  "tertiary": "#ffafd3",
+                  "on-primary-container": "#340080",
+                  "on-primary-fixed-variant": "#5516be"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "md": "24px",
+                  "base": "8px",
+                  "sm": "12px",
+                  "lg": "48px",
+                  "xs": "4px",
+                  "xl": "80px",
+                  "margin": "32px",
+                  "gutter": "24px"
+          },
+          "fontFamily": {
+                  "label-md": ["Montserrat"],
+                  "label-sm": ["Montserrat"],
+                  "display-lg": ["Montserrat"],
+                  "headline-lg": ["Montserrat"],
+                  "body-lg": ["Montserrat"],
+                  "headline-lg-mobile": ["Montserrat"],
+                  "body-md": ["Montserrat"],
+                  "headline-md": ["Montserrat"]
+          },
+          "fontSize": {
+                  "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                  "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "500"}],
+                  "display-lg": ["56px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                  "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                  "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                  "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                  "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-background min-h-screen overflow-hidden flex flex-col font-body-md text-body-md">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_rgba(208,188,255,0.1)] flex justify-between items-center px-margin h-20">
+<div class="font-display-lg text-[32px] tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary-fixed-dim to-secondary">NovaMeet</div>
+<div class="hidden md:flex items-center gap-md text-on-surface-variant font-label-md">
+<span class="hover:text-primary-fixed transition-colors duration-200 cursor-pointer">Galaxy</span>
+<span class="hover:text-primary-fixed transition-colors duration-200 cursor-pointer">Safety</span>
+<span class="hover:text-primary-fixed transition-colors duration-200 cursor-pointer">Orbits</span>
+<span class="hover:text-primary-fixed transition-colors duration-200 cursor-pointer">Support</span>
+</div>
+<div class="flex items-center gap-sm">
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-white/5 rounded-full transition-all">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-white/5 rounded-full transition-all">settings</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A professional profile portrait of a modern young adult with soft cinematic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDUMPbGyAqDd6i2FUXtPeVjNQm5frmB9VVmIkXCdbCecwcXW9setQy7p7BxrCFf_5XdMO1za_w9qsTfuhIR6Hyg-1fUctgRLOb3QRK5SYABc_kgPwLz7QbIjVDFAXjxjUyLmLDmbV4MeEFmTmN9KL7-GAcCIByp1m4KI497e_W-MPF-xTcmf5iTzHYmu0-mfWMjUag2sRuspPGZbv3FmJ75gXszpWP3u-MGgqBFn6IwXXkT0aUh4OqCYVwp75JLQaHvTdjSviBK-4"/>
+</div>
+</div>
+</header>
+<!-- Main Matchmaking Canvas -->
+<main class="relative flex-grow flex flex-col items-center justify-center h-screen w-full overflow-hidden">
+<!-- Celestial Background -->
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover blur-2xl opacity-30" data-alt="Cosmic background with nebula effects." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDg_WK6_5AR-EATUJrRjDxOnzSGl5AqqagM1KHHQTy0CpXkKN0YT5Ex5yWkQXtiRg4uZRthF6DMHP3vikm9X2mTIwI9xKFvQs9rmfopShgYCcET2_n_AeizS89ys8rN0MPMU9zaa0dbKrSLVNbTfME0zqGo0Sh0Z-wrA35vXtMKoh2OlaIK-j5rXiNlMUCrxwVH33yZum-Qr5NdEJZjyibedwL4w1w0siLLe0fxx2lMSERcju5c2ObQkbzEMutOW7JasNpjMVPLVZU"/>
+<div class="absolute inset-0 bg-gradient-to-b from-background via-surface/80 to-background"></div>
+<div class="absolute inset-0 cosmic-pulse bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent"></div>
+</div>
+<!-- Cosmic Matchmaking UI -->
+<div class="z-10 flex flex-col items-center justify-center gap-lg max-w-lg w-full px-base">
+<!-- Orbital Scanning Animation -->
+<div class="relative w-80 h-80 flex items-center justify-center">
+<!-- Outer Orbit -->
+<div class="orbital-ring orbital-path w-full h-full border-dashed border-primary/20">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_#d0bcff]"></div>
+</div>
+<!-- Middle Orbit -->
+<div class="orbital-ring orbital-path w-3/4 h-3/4 border-solid border-secondary/10" style="animation-direction: reverse; animation-duration: 7s;">
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_10px_#5de6ff]"></div>
+</div>
+<!-- Inner Glow -->
+<div class="absolute inset-0 rounded-full bg-primary/5 blur-3xl scale-75"></div>
+<!-- Center Profile Bubble -->
+<div class="relative w-36 h-36 rounded-full border-2 border-primary-fixed/30 p-1 bg-surface-container-low/60 backdrop-blur-3xl shadow-[0_0_50px_rgba(208,188,255,0.2)]">
+<div class="w-full h-full rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Profile image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6bmH8Cu4hwTCjRBs-eDxiat-PZMIpvGNwQlImSICTgtWNjhMzBgK1O-oCX-MZh98mbK7cPvX3F0F3hix6ld1PP9a-wXqM6otTKs5Bx6EwG4TVDhlpAJ6svIlnnhlk5p0AjYY-IdfHOkA3SGymllrnti9d6oPOm2GW_gUm2nEs4wJhLcvgKdffq6QoIS5DBrXmHm03_Xq6WQmkzh9FhwVCgtGK0euAoF0K6zqtQwpnDWJpZ4Qx4iWRIJD6l-poPPKZuBLV2dzGssw"/>
+</div>
+<!-- Scan Sweep Overlay -->
+<div class="absolute inset-0 rounded-full bg-gradient-to-t from-primary/30 to-transparent animate-pulse"></div>
+</div>
+</div>
+<!-- Status Text -->
+<div class="text-center space-y-sm">
+<h1 class="font-display-lg text-headline-lg md:text-display-lg text-primary tracking-tight">Finding Your Next Orbit...</h1>
+<p class="font-body-lg text-on-surface-variant max-w-xs mx-auto">Scanning the celestial sphere for a stellar connection.</p>
+</div>
+<!-- Data Cards -->
+<div class="grid grid-cols-2 gap-sm w-full">
+<div class="glass-card p-sm rounded-xl flex flex-col items-center gap-1 border-primary/10">
+<span class="text-on-surface-variant font-label-sm uppercase tracking-widest">GALAXY SIZE</span>
+<span class="font-headline-md text-primary-fixed">14.2k</span>
+<span class="text-on-surface-variant font-label-sm">SOULS ONLINE</span>
+</div>
+<div class="glass-card p-sm rounded-xl flex flex-col items-center gap-1 border-secondary/10">
+<span class="text-on-surface-variant font-label-sm uppercase tracking-widest">SIGNAL</span>
+<span class="font-headline-md text-secondary-fixed">24ms</span>
+<span class="text-on-surface-variant font-label-sm">LIGHTSPEED</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-md w-full">
+<button class="w-full py-4 bg-gradient-to-r from-primary-container to-secondary-container text-on-primary-fixed font-label-md rounded-full shadow-[0_0_30px_rgba(109,59,215,0.4)] hover:brightness-110 transition-all active:scale-95">
+          Scanning Constellations...
+        </button>
+<button class="w-full py-4 glass-card text-on-surface font-label-md rounded-full hover:bg-white/5 transition-colors">
+          Abort Mission
+        </button>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-xl border-t border-white/5 flex justify-around items-center h-16 pb-safe">
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60">
+<span class="material-symbols-outlined">public</span>
+<span class="font-label-sm">Universe</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary-fixed drop-shadow-[0_0_8px_rgba(208,188,255,0.6)]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-sm">Nova</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-label-sm">Signals</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-label-sm">Profile</span>
+</div>
+</nav>
+<!-- Floating Orbital Decorations -->
+<div class="absolute top-32 left-10 hidden xl:block animate-pulse" style="animation-duration: 6s;">
+<div class="glass-card p-1 rounded-full w-24 h-24 overflow-hidden border-primary-fixed/20 border-2">
+<img class="w-full h-full object-cover" data-alt="Secondary profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmdLlEEwJSrFXgrsuO65LyabsN_aelGebO-9EdLZHaDU3pT0lL1mhbIuz5zpNY1yWgIhFRjp_Im_34Vmgxy-5fqhDNP3Y7ZjXC_TdFpYhM3DcBOEhsZcu8KGn3NndlNqENEr8nPtUHT6m5moeC5kzvV3uKAMVsd_l41qRNt7MOHkkS5D6SRcXGK1GaE9WBuWKqIp6xNWyMy9cpdZwkvuVVmqeIFXFRd4LFVyN50JntCXqCkYBrKmHcTnadEZ6Rc96QZMeWuKWgnv4"/>
+</div>
+</div>
+<div class="absolute bottom-40 right-10 hidden xl:block animate-pulse" style="animation-duration: 8s;">
+<div class="glass-card p-1 rounded-full w-32 h-32 overflow-hidden border-secondary-fixed/20 border-2">
+<img class="w-full h-full object-cover" data-alt="Tertiary profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQfW2fDIp1d-fWeRbmjgE5TmNBhM9Uh5GfiVtHwujDDu5m2zNfXzsXYhSZnV3yinaMSMzgHcsVJjLX78wIVKuym_pQLAbzbLa3YFiNMSHvnP-aqN2Bc49DDGOSkIO4soH_UmVjk1t5HkMw_OgwKpc434BpORwB5vvsM9PpLAxEzlMBqw4-ydpDi5E62zqcC6MX7vYfRbY2yIiKFF45R6ciJnoihWJda7Gq-5Q_hkpjMK4N0FfgGJ7mA9ChZNLUH7g4EWy7UiNlBAQ"/>
+</div>
+</div>
+</body></html>
