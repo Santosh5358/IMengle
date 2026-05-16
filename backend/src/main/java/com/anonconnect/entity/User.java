@@ -1,61 +1,63 @@
 package com.anonconnect.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Entity
-@Table(name = "users")
+@Document(collection = "users")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Builder.Default
+    @JsonProperty("_id")
+    private String id = UUID.randomUUID().toString();
 
-    @Column(nullable = false, unique = true, length = 50)
+    @JsonProperty("username")
     private String username;
 
-    @Column(name = "password_hash", nullable = false)
+    @JsonProperty("passwordHash")
     private String passwordHash;
 
-    @Column(length = 100)
+    @JsonProperty("email")
     private String email;
 
-    @Column(length = 3)
+    @JsonProperty("country")
     private String country;
 
-    @Column(length = 20)
+    @JsonProperty("gender")
     private String gender;
 
-    @Column(name = "avatar_url", length = 500)
+    @JsonProperty("avatarUrl")
     private String avatarUrl;
 
-    @Column(nullable = false, length = 20)
+    @JsonProperty("role")
     @Builder.Default
     private String role = "USER";
 
-    @Column(name = "is_banned", nullable = false)
+    @JsonProperty("isBanned")
     @Builder.Default
     private Boolean isBanned = false;
 
-    @Column(name = "ban_reason", length = 500)
+    @JsonProperty("banReason")
     private String banReason;
 
-    @Column(name = "last_active")
+    @JsonProperty("lastActive")
     private Instant lastActive;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    @JsonProperty("createdAt")
     private Instant createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @LastModifiedDate
+    @JsonProperty("updatedAt")
     private Instant updatedAt;
 }

@@ -1,46 +1,46 @@
 package com.anonconnect.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Entity
-@Table(name = "chat_sessions")
+@Document(collection = "chat_sessions")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 public class ChatSession {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Builder.Default
+    @JsonProperty("_id")
+    private String id = UUID.randomUUID().toString();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "caller_id", nullable = false)
-    private User caller;
+    @JsonProperty("callerId")
+    private String callerId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private User receiver;
+    @JsonProperty("receiverId")
+    private String receiverId;
 
-    @Column(nullable = false, length = 20)
+    @JsonProperty("status")
     @Builder.Default
     private String status = "ACTIVE";
 
-    @Column(name = "start_time", nullable = false)
+    @JsonProperty("startTime")
     @Builder.Default
     private Instant startTime = Instant.now();
 
-    @Column(name = "end_time")
+    @JsonProperty("endTime")
     private Instant endTime;
 
-    @Column(name = "duration_secs")
+    @JsonProperty("durationSecs")
     private Integer durationSecs;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    @JsonProperty("createdAt")
     private Instant createdAt;
 }

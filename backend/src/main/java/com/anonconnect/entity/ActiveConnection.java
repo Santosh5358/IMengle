@@ -1,38 +1,38 @@
 package com.anonconnect.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Entity
-@Table(name = "active_connections")
+@Document(collection = "active_connections")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 public class ActiveConnection {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Builder.Default
+    @JsonProperty("_id")
+    private String id = UUID.randomUUID().toString();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JsonProperty("userId")
+    private String userId;
 
-    @Column(name = "socket_id", nullable = false, length = 100)
+    @JsonProperty("socketId")
     private String socketId;
 
-    @Column(name = "ip_address", length = 45)
+    @JsonProperty("ipAddress")
     private String ipAddress;
 
-    @Column(name = "connected_at", nullable = false)
+    @JsonProperty("connectedAt")
     @Builder.Default
     private Instant connectedAt = Instant.now();
 
-    @Column(name = "last_ping", nullable = false)
+    @JsonProperty("lastPing")
     @Builder.Default
     private Instant lastPing = Instant.now();
 }

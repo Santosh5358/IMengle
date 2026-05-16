@@ -27,3 +27,7 @@ docker/ssl/
 # SSL
 nginx/ssl/*.pem
 nginx/ssl/*.key
+
+# Environment variables
+.env
+backend/.env

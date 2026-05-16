@@ -8,11 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,31 +28,25 @@ public class UserService {
         return activeConnectionRepository.count();
     }
 
-    @Transactional
-    public void updateLastActive(UUID userId) {
+    public void updateLastActive(String userId) {
         userRepository.findById(userId).ifPresent(user -> {
             user.setLastActive(Instant.now());
             userRepository.save(user);
         });
     }
 
-    @Transactional
-    public void reportUser(UUID reporterId, ReportRequest request) {
-        User reporter = userRepository.findById(reporterId)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Reporter not found"));
-
-        User reported = userRepository.findById(request.getReportedUserId())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Reported user not found"));
-
-        ChatSession session = null;
-        if (request.getSessionId() != null) {
-            session = chatSessionRepository.findById(request.getSessionId()).orElse(null);
+    public void reportUser(String reporterId, ReportRequest request) {
+        if (!userRepository.existsById(reporterId)) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Reporter not found");
+        }
+        if (!userRepository.existsById(request.getReportedUserId())) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Reported user not found");
         }
 
         Report report = Report.builder()
-                .reporter(reporter)
-                .reported(reported)
-                .session(session)
+                .reporterId(reporterId)
+                .reportedId(request.getReportedUserId())
+                .sessionId(request.getSessionId())
                 .reason(request.getReason())
                 .description(request.getDescription())
                 .build();
@@ -63,35 +55,35 @@ public class UserService {
         log.info("User {} reported user {} for: {}", reporterId, request.getReportedUserId(), request.getReason());
     }
 
-    @Transactional
-    public void blockUser(UUID blockerId, UUID blockedId) {
+    public void blockUser(String blockerId, String blockedId) {
         if (blockedUserRepository.existsByBlockerIdAndBlockedId(blockerId, blockedId)) {
             throw new AppException(HttpStatus.CONFLICT, "User already blocked");
         }
 
-        User blocker = userRepository.findById(blockerId)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not found"));
-        User blocked = userRepository.findById(blockedId)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not found"));
+        if (!userRepository.existsById(blockerId)) {
+            throw new AppException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        if (!userRepository.existsById(blockedId)) {
+            throw new AppException(HttpStatus.NOT_FOUND, "User not found");
+        }
 
         BlockedUser block = BlockedUser.builder()
-                .blocker(blocker)
-                .blocked(blocked)
+                .blockerId(blockerId)
+                .blockedId(blockedId)
                 .build();
 
         blockedUserRepository.save(block);
         log.info("User {} blocked user {}", blockerId, blockedId);
     }
 
-    @Transactional
-    public void unblockUser(UUID blockerId, UUID blockedId) {
+    public void unblockUser(String blockerId, String blockedId) {
         blockedUserRepository.deleteByBlockerIdAndBlockedId(blockerId, blockedId);
         log.info("User {} unblocked user {}", blockerId, blockedId);
     }
 
-    public List<UUID> getBlockedUserIds(UUID userId) {
+    public List<String> getBlockedUserIds(String userId) {
         return blockedUserRepository.findByBlockerId(userId).stream()
-                .map(b -> b.getBlocked().getId())
+                .map(BlockedUser::getBlockedId)
                 .collect(Collectors.toList());
     }
 }

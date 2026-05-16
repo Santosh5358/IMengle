@@ -14,8 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
@@ -36,22 +34,22 @@ public class AdminController {
 
     @PostMapping("/reports/{reportId}/resolve")
     public ResponseEntity<ApiResponse<Void>> resolveReport(
-            @PathVariable UUID reportId,
+            @PathVariable String reportId,
             @RequestParam String action,
             Authentication auth) {
-        UUID adminId = UUID.fromString(auth.getName());
+        String adminId = auth.getName();
         adminService.resolveReport(reportId, adminId, action);
         return ResponseEntity.ok(ApiResponse.ok("Report resolved", null));
     }
 
     @PostMapping("/ban/{userId}")
-    public ResponseEntity<ApiResponse<Void>> banUser(@PathVariable UUID userId, @RequestParam String reason) {
+    public ResponseEntity<ApiResponse<Void>> banUser(@PathVariable String userId, @RequestParam String reason) {
         adminService.banUser(userId, reason);
         return ResponseEntity.ok(ApiResponse.ok("User banned", null));
     }
 
     @PostMapping("/unban/{userId}")
-    public ResponseEntity<ApiResponse<Void>> unbanUser(@PathVariable UUID userId) {
+    public ResponseEntity<ApiResponse<Void>> unbanUser(@PathVariable String userId) {
         adminService.unbanUser(userId);
         return ResponseEntity.ok(ApiResponse.ok("User unbanned", null));
     }

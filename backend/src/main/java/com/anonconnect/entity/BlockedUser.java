@@ -1,15 +1,20 @@
 package com.anonconnect.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Entity
-@Table(name = "blocked_users", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"blocker_id", "blocked_id"})
+@Document(collection = "blocked_users")
+@CompoundIndexes({
+    @CompoundIndex(name = "blocker_blocked_idx", def = "{'blockerId': 1, 'blockedId': 1}", unique = true)
 })
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
@@ -17,18 +22,17 @@ import java.util.UUID;
 public class BlockedUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Builder.Default
+    @JsonProperty("_id")
+    private String id = UUID.randomUUID().toString();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "blocker_id", nullable = false)
-    private User blocker;
+    @JsonProperty("blockerId")
+    private String blockerId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "blocked_id", nullable = false)
-    private User blocked;
+    @JsonProperty("blockedId")
+    private String blockedId;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    @JsonProperty("createdAt")
     private Instant createdAt;
 }

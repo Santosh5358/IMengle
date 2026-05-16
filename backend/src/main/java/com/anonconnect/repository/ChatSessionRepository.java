@@ -3,21 +3,18 @@ package com.anonconnect.repository;
 import com.anonconnect.entity.ChatSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Repository
-public interface ChatSessionRepository extends JpaRepository<ChatSession, UUID> {
+public interface ChatSessionRepository extends MongoRepository<ChatSession, String> {
 
-    Page<ChatSession> findByCallerIdOrReceiverId(UUID callerId, UUID receiverId, Pageable pageable);
+    Page<ChatSession> findByCallerIdOrReceiverId(String callerId, String receiverId, Pageable pageable);
 
-    @Query("SELECT COUNT(s) FROM ChatSession s WHERE s.status = 'ACTIVE'")
-    long countActiveSessions();
+    long countByStatus(String status);
 
-    @Query("SELECT COUNT(s) FROM ChatSession s WHERE s.startTime > :since")
-    long countSessionsSince(Instant since);
+    long countByStartTimeGreaterThan(Instant since);
 }

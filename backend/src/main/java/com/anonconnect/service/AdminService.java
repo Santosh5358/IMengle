@@ -12,11 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +32,10 @@ public class AdminService {
         return DashboardStats.builder()
                 .totalUsers(userRepository.count())
                 .onlineUsers(activeConnectionRepository.count())
-                .activeSessions(chatSessionRepository.countActiveSessions())
+                .activeSessions(chatSessionRepository.countByStatus("ACTIVE"))
                 .pendingReports(reportRepository.countByStatus("PENDING"))
                 .bannedUsers(userRepository.countBannedUsers())
-                .totalSessionsToday(chatSessionRepository.countSessionsSince(today))
+                .totalSessionsToday(chatSessionRepository.countByStartTimeGreaterThan(today))
                 .build();
     }
 
@@ -45,28 +43,27 @@ public class AdminService {
         return reportRepository.findByStatus("PENDING", pageable);
     }
 
-    @Transactional
-    public void resolveReport(UUID reportId, UUID adminId, String action) {
+    public void resolveReport(String reportId, String adminId, String action) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Report not found"));
 
-        User admin = userRepository.findById(adminId)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Admin not found"));
+        if (!userRepository.existsById(adminId)) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Admin not found");
+        }
 
         report.setStatus(action.toUpperCase());
-        report.setReviewedBy(admin);
+        report.setReviewedById(adminId);
         report.setReviewedAt(Instant.now());
         reportRepository.save(report);
 
         if ("BANNED".equalsIgnoreCase(action)) {
-            banUser(report.getReported().getId(), "Banned due to report: " + report.getReason());
+            banUser(report.getReportedId(), "Banned due to report: " + report.getReason());
         }
 
         log.info("Report {} resolved with action: {} by admin: {}", reportId, action, adminId);
     }
 
-    @Transactional
-    public void banUser(UUID userId, String reason) {
+    public void banUser(String userId, String reason) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not found"));
 
@@ -76,8 +73,7 @@ public class AdminService {
         log.info("User {} banned: {}", userId, reason);
     }
 
-    @Transactional
-    public void unbanUser(UUID userId) {
+    public void unbanUser(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not found"));
 
@@ -93,7 +89,7 @@ public class AdminService {
 
     private UserDTO toDTO(User user) {
         return UserDTO.builder()
-                .id(user.getId().toString())
+                .id(user.getId())
                 .username(user.getUsername())
                 .country(user.getCountry())
                 .gender(user.getGender())

@@ -1,53 +1,51 @@
 package com.anonconnect.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Entity
-@Table(name = "reports")
+@Document(collection = "reports")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 public class Report {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Builder.Default
+    @JsonProperty("_id")
+    private String id = UUID.randomUUID().toString();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reporter_id", nullable = false)
-    private User reporter;
+    @JsonProperty("reporterId")
+    private String reporterId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reported_id", nullable = false)
-    private User reported;
+    @JsonProperty("reportedId")
+    private String reportedId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id")
-    private ChatSession session;
+    @JsonProperty("sessionId")
+    private String sessionId;
 
-    @Column(nullable = false, length = 50)
+    @JsonProperty("reason")
     private String reason;
 
-    @Column(length = 1000)
+    @JsonProperty("description")
     private String description;
 
-    @Column(nullable = false, length = 20)
+    @JsonProperty("status")
     @Builder.Default
     private String status = "PENDING";
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewed_by")
-    private User reviewedBy;
+    @JsonProperty("reviewedById")
+    private String reviewedById;
 
-    @Column(name = "reviewed_at")
+    @JsonProperty("reviewedAt")
     private Instant reviewedAt;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    @JsonProperty("createdAt")
     private Instant createdAt;
 }

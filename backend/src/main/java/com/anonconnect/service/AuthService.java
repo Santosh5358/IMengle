@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(HttpStatus.CONFLICT, "Username already exists");
@@ -41,11 +39,11 @@ public class AuthService {
                 .build();
         user = userRepository.save(user);
 
-        UserPreference pref = UserPreference.builder().user(user).build();
+        UserPreference pref = UserPreference.builder().userId(user.getId()).build();
         preferenceRepository.save(pref);
 
         String token = jwtTokenProvider.generateToken(
-                user.getId().toString(), user.getUsername(), user.getRole());
+                user.getId(), user.getUsername(), user.getRole());
 
         log.info("User registered: {}", user.getUsername());
 
@@ -53,7 +51,7 @@ public class AuthService {
                 .token(token)
                 .username(user.getUsername())
                 .role(user.getRole())
-                .userId(user.getId().toString())
+                .userId(user.getId())
                 .build();
     }
 
@@ -70,7 +68,7 @@ public class AuthService {
         }
 
         String token = jwtTokenProvider.generateToken(
-                user.getId().toString(), user.getUsername(), user.getRole());
+                user.getId(), user.getUsername(), user.getRole());
 
         log.info("User logged in: {}", user.getUsername());
 
@@ -78,11 +76,10 @@ public class AuthService {
                 .token(token)
                 .username(user.getUsername())
                 .role(user.getRole())
-                .userId(user.getId().toString())
+                .userId(user.getId())
                 .build();
     }
 
-    @Transactional
     public AuthResponse createAnonymousSession() {
         String anonUsername = "anon_" + System.currentTimeMillis();
         String anonPassword = java.util.UUID.randomUUID().toString();

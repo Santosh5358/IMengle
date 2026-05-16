@@ -1,47 +1,50 @@
 package com.anonconnect.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Entity
-@Table(name = "user_preferences")
+@Document(collection = "user_preferences")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 public class UserPreference {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Builder.Default
+    @JsonProperty("_id")
+    private String id = UUID.randomUUID().toString();
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    @Indexed(unique = true)
+    @JsonProperty("userId")
+    private String userId;
 
-    @Column(name = "preferred_gender", length = 20)
+    @JsonProperty("preferredGender")
     private String preferredGender;
 
-    @Column(name = "preferred_country", length = 3)
+    @JsonProperty("preferredCountry")
     private String preferredCountry;
 
-    @Column(nullable = false, length = 10)
+    @JsonProperty("theme")
     @Builder.Default
     private String theme = "dark";
 
-    @Column(nullable = false)
+    @JsonProperty("notifications")
     @Builder.Default
     private Boolean notifications = true;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    @JsonProperty("createdAt")
     private Instant createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @LastModifiedDate
+    @JsonProperty("updatedAt")
     private Instant updatedAt;
 }

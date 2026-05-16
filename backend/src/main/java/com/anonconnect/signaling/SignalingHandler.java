@@ -2,7 +2,6 @@ package com.anonconnect.signaling;
 
 import com.anonconnect.dto.MatchPreferences;
 import com.anonconnect.entity.ActiveConnection;
-import com.anonconnect.entity.User;
 import com.anonconnect.repository.ActiveConnectionRepository;
 import com.anonconnect.repository.UserRepository;
 import com.anonconnect.service.ChatService;
@@ -17,7 +16,6 @@ import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.*;
@@ -81,14 +79,14 @@ public class SignalingHandler {
                 socketUserMap.put(client.getSessionId(), userId);
 
                 // Register active connection
-                userRepository.findById(UUID.fromString(userId)).ifPresent(user -> {
+                if (userRepository.existsById(userId)) {
                     ActiveConnection conn = ActiveConnection.builder()
-                            .user(user)
+                            .userId(userId)
                             .socketId(client.getSessionId().toString())
                             .ipAddress(client.getHandshakeData().getAddress().getHostString())
                             .build();
                     activeConnectionRepository.save(conn);
-                });
+                }
 
                 log.info("Client connected: {} (user: {})", client.getSessionId(), userId);
             }
@@ -201,7 +199,7 @@ public class SignalingHandler {
             if (content == null || content.isBlank()) return;
 
             // Persist message
-            chatService.saveMessage(UUID.fromString(sessionId), UUID.fromString(userId), content, "TEXT");
+            chatService.saveMessage(sessionId, userId, content, "TEXT");
 
             // Forward to peer
             String[] sessionUsers = activeSessions.get(sessionId);
@@ -210,7 +208,7 @@ public class SignalingHandler {
                 String peerSocketId = matchmakingService.getSocketId(peerId);
                 // The peer might not be in the queue map; check active connections
                 if (peerSocketId == null) {
-                    activeConnectionRepository.findByUserId(UUID.fromString(peerId))
+                    activeConnectionRepository.findByUserId(peerId)
                             .ifPresent(conn -> {
                                 SocketIOClient peer = server.getClient(UUID.fromString(conn.getSocketId()));
                                 if (peer != null) {
@@ -281,8 +279,8 @@ public class SignalingHandler {
         String socketId2 = matchData[3];
 
         // Create chat session
-        var session = chatService.createSession(UUID.fromString(userId1), UUID.fromString(userId2));
-        String sessionId = session.getId().toString();
+        var session = chatService.createSession(userId1, userId2);
+        String sessionId = session.getId();
 
         activeSessions.put(sessionId, new String[]{userId1, userId2});
         userSessionMap.put(userId1, sessionId);
@@ -317,12 +315,12 @@ public class SignalingHandler {
         if (sessionId != null) {
             String[] sessionUsers = activeSessions.remove(sessionId);
             if (sessionUsers != null) {
-                chatService.endSession(UUID.fromString(sessionId));
+                chatService.endSession(sessionId);
                 String peerId = sessionUsers[0].equals(userId) ? sessionUsers[1] : sessionUsers[0];
                 userSessionMap.remove(peerId);
 
                 // Notify peer
-                activeConnectionRepository.findByUserId(UUID.fromString(peerId))
+                activeConnectionRepository.findByUserId(peerId)
                         .ifPresent(conn -> {
                             SocketIOClient peer = server.getClient(UUID.fromString(conn.getSocketId()));
                             if (peer != null) {
@@ -344,7 +342,7 @@ public class SignalingHandler {
         if (sessionUsers == null) return;
 
         String peerId = sessionUsers[0].equals(userId) ? sessionUsers[1] : sessionUsers[0];
-        activeConnectionRepository.findByUserId(UUID.fromString(peerId))
+        activeConnectionRepository.findByUserId(peerId)
                 .ifPresent(conn -> {
                     SocketIOClient peer = server.getClient(UUID.fromString(conn.getSocketId()));
                     if (peer != null) {
