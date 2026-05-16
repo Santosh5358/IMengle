@@ -264,7 +264,8 @@ export class HomeComponent {
         this.isLoading.set(false);
         this.showLogin.set(false);
         this.socketService.connect();
-        this.router.navigate(['/chat']);
+        const user = this.authService.currentUser();
+        this.router.navigate([user?.role === 'ADMIN' ? '/admin' : '/chat']);
       },
       error: (err) => {
         this.isLoading.set(false);
