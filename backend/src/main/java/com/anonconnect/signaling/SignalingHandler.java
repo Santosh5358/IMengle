@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-@ConditionalOnProperty(name = "socketio.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "socketio.enabled", havingValue = "true", matchIfMissing = false)
 @RequiredArgsConstructor
 @Slf4j
 public class SignalingHandler {

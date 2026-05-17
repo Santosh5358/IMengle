@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(name = "socketio.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "socketio.enabled", havingValue = "true", matchIfMissing = false)
 public class SocketIOConfig {
 
     @Value("${socketio.host:0.0.0.0}")
