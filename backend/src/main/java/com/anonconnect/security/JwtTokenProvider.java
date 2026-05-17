@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 
@@ -18,8 +19,24 @@ public class JwtTokenProvider {
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration-ms}") long expirationMs) {
-        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
+        this.key = Keys.hmacShaKeyFor(resolveSecretBytes(secret));
         this.expirationMs = expirationMs;
+    }
+
+    private byte[] resolveSecretBytes(String secret) {
+        byte[] secretBytes;
+        try {
+            // Preferred format for production: Base64-encoded key material.
+            secretBytes = Base64.getDecoder().decode(secret);
+        } catch (IllegalArgumentException ex) {
+            // Fallback: allow plain-text secret to avoid hard startup failures.
+            secretBytes = secret.getBytes(StandardCharsets.UTF_8);
+        }
+
+        if (secretBytes.length < 32) {
+            throw new IllegalArgumentException("JWT secret must be at least 32 bytes (Base64-decoded or plain text).");
+        }
+        return secretBytes;
     }
 
     public String generateToken(String userId, String username, String role) {
