@@ -8,6 +8,7 @@ import lombok.Data;
 public class DashboardStats {
     private long totalUsers;
     private long onlineUsers;
+    private long activeSocketConnections;
     private long activeSessions;
     private long pendingReports;
     private long bannedUsers;

@@ -1,6 +1,7 @@
 package com.anonconnect.repository;
 
 import com.anonconnect.entity.ActiveConnection;
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +13,12 @@ public interface ActiveConnectionRepository extends MongoRepository<ActiveConnec
     Optional<ActiveConnection> findBySocketId(String socketId);
     void deleteByUserId(String userId);
     void deleteBySocketId(String socketId);
+
     long count();
+
+    @Aggregation(pipeline = {
+            "{$group: { _id: '$userId' }}",
+            "{$count: 'count'}"
+    })
+    long countDistinctByUserId();
 }

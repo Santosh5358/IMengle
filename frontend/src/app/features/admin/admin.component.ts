@@ -6,6 +6,7 @@ import { environment } from '@env/environment';
 interface DashboardStats {
   totalUsers: number;
   onlineUsers: number;
+  activeSocketConnections: number;
   activeSessions: number;
   pendingReports: number;
   bannedUsers: number;
@@ -196,8 +197,9 @@ export class AdminComponent implements OnInit {
     this.http.get<{ data: DashboardStats }>(`${environment.apiUrl}/admin/dashboard`).subscribe(res => {
       this.stats.set(res.data);
       this.statCards.set([
-        { label: 'Total Users', value: res.data.totalUsers, icon: 'group', color: '#00dbe9' },
-        { label: 'Online Now', value: res.data.onlineUsers, icon: 'wifi', color: '#4ade80' },
+        { label: 'Registered Accounts', value: res.data.totalUsers, icon: 'group', color: '#00dbe9' },
+        { label: 'Online Users', value: res.data.onlineUsers, icon: 'wifi', color: '#4ade80' },
+        { label: 'Active Socket Connections', value: res.data.activeSocketConnections, icon: 'wifi_protected_setup', color: '#7c3aed' },
         { label: 'Active Sessions', value: res.data.activeSessions, icon: 'call', color: '#d0bcff' },
         { label: 'Pending Reports', value: res.data.pendingReports, icon: 'flag', color: '#ffb4ab' },
         { label: 'Banned Users', value: res.data.bannedUsers, icon: 'block', color: '#ff6b6b' },

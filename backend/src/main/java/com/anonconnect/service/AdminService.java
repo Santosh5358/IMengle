@@ -31,7 +31,8 @@ public class AdminService {
 
         return DashboardStats.builder()
                 .totalUsers(userRepository.count())
-                .onlineUsers(activeConnectionRepository.count())
+                .onlineUsers(activeConnectionRepository.countDistinctByUserId())
+                .activeSocketConnections(activeConnectionRepository.count())
                 .activeSessions(chatSessionRepository.countByStatus("ACTIVE"))
                 .pendingReports(reportRepository.countByStatus("PENDING"))
                 .bannedUsers(userRepository.countBannedUsers())

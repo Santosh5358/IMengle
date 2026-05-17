@@ -46,7 +46,10 @@ export class SocketService {
     const user = this.authService.currentUser();
     if (!user) return;
 
-    this.socket = io(environment.socketUrl, {
+    const socketUrl = environment.socketUrl?.trim() || undefined;
+
+    this.socket = io(socketUrl, {
+      path: '/socket.io',
       query: { userId: user.userId },
       transports: ['websocket', 'polling'],
       reconnection: true,
