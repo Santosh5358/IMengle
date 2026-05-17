@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   apiUrl: '/api',
-  socketUrl: '',
+  socketUrl: 'https://imengle.onrender.com',
   webrtc: {
     iceServers: [
       { urls: 'stun:stun.l.google.com:19302' },

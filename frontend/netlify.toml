@@ -15,6 +15,12 @@
   force = true
 
 [[redirects]]
+  from = "/socket.io*"
+  to = "https://imengle.onrender.com/socket.io:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/socket.io/*"
   to = "https://imengle.onrender.com:9092/socket.io/:splat"
   status = 200

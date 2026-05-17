@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   apiUrl: '/api',
-  socketUrl: '',
+  socketUrl: 'http://localhost:8080',
   webrtc: {
     iceServers: [
       { urls: 'stun:stun.l.google.com:19302' },

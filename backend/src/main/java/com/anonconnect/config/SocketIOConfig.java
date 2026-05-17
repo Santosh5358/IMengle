@@ -9,17 +9,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SocketIOConfig {
 
-    @Value("${socketio.host}")
-    private String host;
-
-    @Value("${socketio.port}")
-    private int port;
+    @Value("${server.port:8080}")
+    private int httpPort;
 
     @Bean
     public SocketIOServer socketIOServer() {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
-        config.setHostname(host);
-        config.setPort(port);
+        config.setHostname("0.0.0.0");
+        config.setPort(httpPort);
+        config.setContext("/socket.io");
         config.setTransports(Transport.WEBSOCKET, Transport.POLLING);
         config.setOrigin("*");
         config.setPingTimeout(60000);

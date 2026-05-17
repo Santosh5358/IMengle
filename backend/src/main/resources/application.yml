@@ -30,7 +30,7 @@ jwt:
 # ─── Socket.IO Configuration ─────────────────────────────
 socketio:
   host: 0.0.0.0
-  port: ${SOCKETIO_PORT:9092}
+  port: ${SOCKETIO_PORT:8080}
 
 # ─── WebRTC STUN/TURN ────────────────────────────────────
 webrtc:
