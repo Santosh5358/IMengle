@@ -6,3 +6,8 @@ logging:
   level:
     com.anonconnect: DEBUG
     org.springframework.web: DEBUG
+
+socketio:
+  enabled: true
+  host: 0.0.0.0
+  port: ${SOCKETIO_PORT:9092}

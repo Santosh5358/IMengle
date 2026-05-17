@@ -6,7 +6,7 @@
     "logLevel": "debug"
   },
   "/socket.io": {
-    "target": "http://localhost:8080",
+    "target": "http://localhost:9092",
     "ws": true,
     "secure": false,
     "changeOrigin": true,
