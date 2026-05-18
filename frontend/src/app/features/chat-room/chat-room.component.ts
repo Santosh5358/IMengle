@@ -171,7 +171,7 @@ type RoomState = 'idle' | 'searching' | 'connected';
 
           <!-- Local Video (PiP overlay) -->
           <div class="absolute bottom-4 right-4 w-28 h-36 md:w-48 md:h-36 rounded-xl overflow-hidden bg-surface-container-low shadow-lg border border-outline-variant/30 z-10">
-            <video #localVideo autoplay playsinline muted
+            <video #localVideo autoplay playsinline muted volume="0"
                    class="w-full h-full object-cover mirror"></video>
             <div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full glass">
               <span class="text-label-sm text-neon-cyan font-display">You</span>
@@ -384,6 +384,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
       const stream = await this.webrtcService.startLocalStream();
       if (this.localVideoRef) {
         this.localVideoRef.nativeElement.srcObject = stream;
+        this.localVideoRef.nativeElement.volume = 0;
+        this.localVideoRef.nativeElement.muted = true;
       }
     } catch (e) {
       console.error('Camera access denied:', e);
@@ -394,6 +396,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.webrtcService.localStream$.subscribe(stream => {
         if (this.localVideoRef) {
           this.localVideoRef.nativeElement.srcObject = stream;
+          this.localVideoRef.nativeElement.volume = 0;
+          this.localVideoRef.nativeElement.muted = true;
         }
       })
     );

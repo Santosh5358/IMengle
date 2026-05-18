@@ -43,6 +43,14 @@ export class WebrtcService {
         autoGainControl: true,
       },
     });
+    
+    // Ensure audio is explicitly enabled on the stream for sending to peer
+    // but mute it locally to prevent echo
+    this.localStream.getAudioTracks().forEach(track => {
+      // Track is active, ready to send to peer
+      track.enabled = true;
+    });
+    
     this.localStream$.next(this.localStream);
     return this.localStream;
   }
