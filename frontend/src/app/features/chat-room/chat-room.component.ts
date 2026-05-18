@@ -15,14 +15,14 @@ interface ChatMsg {
   timestamp: Date;
 }
 
-type RoomState = 'idle' | 'searching' | 'connected' | 'peer-disconnected';
+type RoomState = 'idle' | 'searching' | 'connected';
 
 @Component({
   selector: 'app-chat-room',
   standalone: true,
   imports: [FormsModule, DatePipe, SearchOverlayComponent],
   template: `
-    <div class="h-screen pt-16 flex flex-col md:flex-row bg-surface overflow-hidden">
+    <div class="h-[100dvh] pt-16 flex flex-col md:flex-row bg-surface overflow-hidden">
 
       <!-- Search Overlay -->
       @if (state() === 'searching') {
@@ -31,12 +31,109 @@ type RoomState = 'idle' | 'searching' | 'connected' | 'peer-disconnected';
           (cancel)="cancelSearch()" />
       }
 
+      <!-- Gender Preference Modal -->
+      @if (showPreferences()) {
+        <div class="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-md mt-16">
+          <div class="relative p-8 rounded-3xl max-w-md w-full mx-4 animate-scaleIn overflow-hidden
+                      bg-gradient-to-br from-surface-container-high/95 to-surface-container/95
+                      border border-outline-variant/20 shadow-2xl shadow-neon-cyan/5">
+            <!-- Decorative glow circles -->
+            <div class="absolute -top-20 -left-20 w-40 h-40 bg-neon-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-neon-magenta/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Header -->
+            <div class="relative text-center mb-8">
+              <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-neon-cyan/20 to-neon-magenta/20 border border-outline-variant/20 mb-4">
+                <span class="material-symbols-outlined text-3xl text-neon-cyan">diversity_3</span>
+              </div>
+              <h2 class="font-display font-bold text-headline-md text-on-surface mb-1">Find Your Match</h2>
+              <p class="text-body-md text-on-surface-variant">Who would you like to connect with?</p>
+            </div>
+
+            <!-- Gender Options -->
+            <div class="relative grid grid-cols-3 gap-3 mb-8">
+              <!-- Male -->
+              <button (click)="selectedGender = 'male'"
+                      class="group relative p-5 rounded-2xl flex flex-col items-center gap-3 transition-all duration-300 cursor-pointer"
+                      [class]="selectedGender === 'male'
+                        ? 'bg-gradient-to-b from-neon-cyan/20 to-neon-cyan/5 border-2 border-neon-cyan shadow-lg shadow-neon-cyan/20 scale-[1.02]'
+                        : 'bg-surface-container-low/50 border-2 border-outline-variant/20 hover:border-neon-cyan/40 hover:bg-neon-cyan/5 hover:scale-[1.01]'">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
+                     [class]="selectedGender === 'male' ? 'bg-neon-cyan/20' : 'bg-surface-container-high group-hover:bg-neon-cyan/10'">
+                  <span class="material-symbols-outlined text-2xl transition-colors duration-300"
+                        [class]="selectedGender === 'male' ? 'text-neon-cyan' : 'text-on-surface-variant group-hover:text-neon-cyan'">male</span>
+                </div>
+                <span class="font-display font-semibold text-label-md transition-colors duration-300"
+                      [class]="selectedGender === 'male' ? 'text-neon-cyan' : 'text-on-surface-variant group-hover:text-on-surface'">Male</span>
+                @if (selectedGender === 'male') {
+                  <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-neon-cyan flex items-center justify-center">
+                    <span class="material-symbols-outlined text-xs text-surface">check</span>
+                  </div>
+                }
+              </button>
+
+              <!-- Female -->
+              <button (click)="selectedGender = 'female'"
+                      class="group relative p-5 rounded-2xl flex flex-col items-center gap-3 transition-all duration-300 cursor-pointer"
+                      [class]="selectedGender === 'female'
+                        ? 'bg-gradient-to-b from-neon-magenta/20 to-neon-magenta/5 border-2 border-neon-magenta shadow-lg shadow-neon-magenta/20 scale-[1.02]'
+                        : 'bg-surface-container-low/50 border-2 border-outline-variant/20 hover:border-neon-magenta/40 hover:bg-neon-magenta/5 hover:scale-[1.01]'">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
+                     [class]="selectedGender === 'female' ? 'bg-neon-magenta/20' : 'bg-surface-container-high group-hover:bg-neon-magenta/10'">
+                  <span class="material-symbols-outlined text-2xl transition-colors duration-300"
+                        [class]="selectedGender === 'female' ? 'text-neon-magenta' : 'text-on-surface-variant group-hover:text-neon-magenta'">female</span>
+                </div>
+                <span class="font-display font-semibold text-label-md transition-colors duration-300"
+                      [class]="selectedGender === 'female' ? 'text-neon-magenta' : 'text-on-surface-variant group-hover:text-on-surface'">Female</span>
+                @if (selectedGender === 'female') {
+                  <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-neon-magenta flex items-center justify-center">
+                    <span class="material-symbols-outlined text-xs text-surface">check</span>
+                  </div>
+                }
+              </button>
+
+              <!-- Anyone -->
+              <button (click)="selectedGender = ''"
+                      class="group relative p-5 rounded-2xl flex flex-col items-center gap-3 transition-all duration-300 cursor-pointer"
+                      [class]="selectedGender === ''
+                        ? 'bg-gradient-to-b from-neon-lime/20 to-neon-lime/5 border-2 border-neon-lime shadow-lg shadow-neon-lime/20 scale-[1.02]'
+                        : 'bg-surface-container-low/50 border-2 border-outline-variant/20 hover:border-neon-lime/40 hover:bg-neon-lime/5 hover:scale-[1.01]'">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
+                     [class]="selectedGender === '' ? 'bg-neon-lime/20' : 'bg-surface-container-high group-hover:bg-neon-lime/10'">
+                  <span class="material-symbols-outlined text-2xl transition-colors duration-300"
+                        [class]="selectedGender === '' ? 'text-neon-lime' : 'text-on-surface-variant group-hover:text-neon-lime'">groups</span>
+                </div>
+                <span class="font-display font-semibold text-label-md transition-colors duration-300"
+                      [class]="selectedGender === '' ? 'text-neon-lime' : 'text-on-surface-variant group-hover:text-on-surface'">Anyone</span>
+                @if (selectedGender === '') {
+                  <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-neon-lime flex items-center justify-center">
+                    <span class="material-symbols-outlined text-xs text-surface">check</span>
+                  </div>
+                }
+              </button>
+            </div>
+
+            <!-- Action Button -->
+            <button (click)="confirmPreferences()"
+                    class="relative w-full py-4 rounded-2xl font-display font-bold text-label-md
+                           bg-gradient-to-r from-neon-cyan via-neon-cyan to-neon-magenta
+                           text-surface transition-all duration-300
+                           hover:shadow-lg hover:shadow-neon-cyan/30 hover:scale-[1.01] active:scale-[0.99]">
+              <span class="flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-xl">bolt</span>
+                Start Matching
+              </span>
+            </button>
+          </div>
+        </div>
+      }
+
       <!-- Main Video Area -->
-      <div class="flex-1 flex flex-col relative">
+      <div class="flex-1 flex flex-col relative min-h-0">
         <!-- Videos Grid -->
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 p-2 md:p-4">
-          <!-- Remote Video -->
-          <div class="relative rounded-2xl overflow-hidden bg-surface-container-lowest group">
+        <div class="flex-1 relative p-2 md:p-4 min-h-0">
+          <!-- Remote Video (full area) -->
+          <div class="relative rounded-2xl overflow-hidden bg-surface-container-lowest w-full h-full">
             <video #remoteVideo autoplay playsinline
                    class="w-full h-full object-cover"></video>
             <!-- Overlay when no peer -->
@@ -54,7 +151,7 @@ type RoomState = 'idle' | 'searching' | 'connected' | 'peer-disconnected';
             @if (state() === 'connected') {
               <div class="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full glass">
                 <span class="w-2 h-2 rounded-full bg-green-400"></span>
-                <span class="text-label-sm text-on-surface font-display">Stranger</span>
+                <span class="text-label-sm text-on-surface font-display">{{ peerName() }}</span>
               </div>
             }
             <!-- Connection state -->
@@ -72,60 +169,52 @@ type RoomState = 'idle' | 'searching' | 'connected' | 'peer-disconnected';
             <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-container-lowest/80 to-transparent"></div>
           </div>
 
-          <!-- Local Video -->
-          <div class="relative rounded-2xl overflow-hidden bg-surface-container-low">
+          <!-- Local Video (PiP overlay) -->
+          <div class="absolute bottom-4 right-4 w-28 h-36 md:w-48 md:h-36 rounded-xl overflow-hidden bg-surface-container-low shadow-lg border border-outline-variant/30 z-10">
             <video #localVideo autoplay playsinline muted
                    class="w-full h-full object-cover mirror"></video>
-            <div class="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full glass">
+            <div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full glass">
               <span class="text-label-sm text-neon-cyan font-display">You</span>
             </div>
-            <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-container-low/80 to-transparent"></div>
           </div>
         </div>
 
         <!-- Control Bar -->
-        <div class="flex items-center justify-center gap-3 p-4 bg-surface-container/60 backdrop-blur-md border-t border-outline-variant/20">
+        <div class="flex items-center justify-between md:justify-center gap-1 md:gap-2 p-1.5 md:p-3 bg-surface-container/60 backdrop-blur-md border-t border-outline-variant/20 flex-shrink-0">
           <!-- Mic Toggle -->
           <button (click)="webrtcService.toggleMute()"
-                  class="w-12 h-12 rounded-xl flex items-center justify-center transition-all"
+                  class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all"
                   [class]="webrtcService.isMuted() ? 'bg-error/20 border border-error/40 text-error' : 'bg-surface-container-high border border-outline-variant/30 text-on-surface hover:bg-surface-container-highest'">
-            <span class="material-symbols-outlined">{{ webrtcService.isMuted() ? 'mic_off' : 'mic' }}</span>
+            <span class="material-symbols-outlined text-[20px] md:text-[24px]">{{ webrtcService.isMuted() ? 'mic_off' : 'mic' }}</span>
           </button>
 
           <!-- Camera Toggle -->
           <button (click)="webrtcService.toggleCamera()"
-                  class="w-12 h-12 rounded-xl flex items-center justify-center transition-all"
+                  class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all"
                   [class]="webrtcService.isCameraOff() ? 'bg-error/20 border border-error/40 text-error' : 'bg-surface-container-high border border-outline-variant/30 text-on-surface hover:bg-surface-container-highest'">
-            <span class="material-symbols-outlined">{{ webrtcService.isCameraOff() ? 'videocam_off' : 'videocam' }}</span>
-          </button>
-
-          <!-- Screen Share -->
-          <button (click)="webrtcService.toggleScreenShare()"
-                  class="w-12 h-12 rounded-xl flex items-center justify-center transition-all"
-                  [class]="webrtcService.isScreenSharing() ? 'bg-neon-cyan/20 border border-neon-cyan/40 text-neon-cyan' : 'bg-surface-container-high border border-outline-variant/30 text-on-surface hover:bg-surface-container-highest'">
-            <span class="material-symbols-outlined">screen_share</span>
+            <span class="material-symbols-outlined text-[20px] md:text-[24px]">{{ webrtcService.isCameraOff() ? 'videocam_off' : 'videocam' }}</span>
           </button>
 
           <!-- Spacer -->
-          <div class="w-px h-8 bg-outline-variant/30 mx-2"></div>
+          <div class="w-px h-6 md:h-8 bg-outline-variant/30 mx-0.5 md:mx-1"></div>
 
           <!-- Start / Next -->
-          @if (state() === 'idle' || state() === 'peer-disconnected') {
+          @if (state() === 'idle') {
             <button (click)="startSearch()"
-                    class="btn-primary px-8 neon-glow-cyan">
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined">search</span>
-                Start
+                    class="compact-action-btn btn-primary px-3 md:px-8 py-2 md:py-3 neon-glow-cyan text-xs md:text-sm">
+              <span class="flex items-center gap-1 md:gap-2">
+                <span class="material-symbols-outlined text-[18px] md:text-[24px]">search</span>
+                <span class="compact-action-label">Start</span>
               </span>
             </button>
           }
 
           @if (state() === 'connected') {
             <button (click)="nextUser()"
-                    class="btn-primary px-8">
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined">skip_next</span>
-                Next
+                    class="compact-action-btn btn-primary px-3 md:px-8 py-2 md:py-3 text-xs md:text-sm">
+              <span class="flex items-center gap-1 md:gap-2">
+                <span class="material-symbols-outlined text-[18px] md:text-[24px]">skip_next</span>
+                <span class="compact-action-label">Next</span>
               </span>
             </button>
           }
@@ -133,63 +222,44 @@ type RoomState = 'idle' | 'searching' | 'connected' | 'peer-disconnected';
           <!-- End Session -->
           @if (state() === 'connected' || state() === 'searching') {
             <button (click)="endSession()"
-                    class="btn-danger px-6">
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined">call_end</span>
-                Stop
+                  class="compact-action-btn btn-danger px-2.5 md:px-5 py-2 md:py-3 text-xs md:text-sm">
+              <span class="flex items-center gap-1 md:gap-2">
+                <span class="material-symbols-outlined text-[18px] md:text-[24px]">call_end</span>
+                <span class="compact-action-label">Stop</span>
               </span>
             </button>
           }
 
           <!-- Spacer -->
-          <div class="w-px h-8 bg-outline-variant/30 mx-2"></div>
+          <div class="w-px h-6 md:h-8 bg-outline-variant/30 mx-0.5 md:mx-1"></div>
 
           <!-- Report -->
           @if (state() === 'connected') {
             <button (click)="reportPeer()"
-                    class="w-12 h-12 rounded-xl bg-surface-container-high border border-outline-variant/30
-                           flex items-center justify-center text-on-surface-variant hover:text-error hover:border-error/30 transition-all">
+                    class="hidden md:flex w-12 h-12 rounded-xl bg-surface-container-high border border-outline-variant/30
+                           items-center justify-center text-on-surface-variant hover:text-error hover:border-error/30 transition-all">
               <span class="material-symbols-outlined">flag</span>
             </button>
           }
 
           <!-- Chat Sidebar Toggle (mobile) -->
           <button (click)="showChat.set(!showChat())"
-                  class="md:hidden w-12 h-12 rounded-xl bg-surface-container-high border border-outline-variant/30
+                  class="md:hidden w-10 h-10 rounded-xl bg-surface-container-high border border-outline-variant/30
                          flex items-center justify-center text-on-surface hover:bg-surface-container-highest transition-all">
-            <span class="material-symbols-outlined">chat</span>
+            <span class="material-symbols-outlined text-[20px]">chat</span>
           </button>
         </div>
-
-        <!-- Peer Disconnected Overlay -->
-        @if (state() === 'peer-disconnected') {
-          <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-10 mt-16">
-            <div class="glass-strong p-8 rounded-2xl text-center max-w-sm mx-4 animate-scaleIn">
-              <span class="material-symbols-outlined text-5xl text-error mb-4">person_off</span>
-              <h3 class="font-display font-bold text-headline-md text-on-surface mb-2">Peer Disconnected</h3>
-              <p class="text-body-md text-on-surface-variant mb-6">Your chat partner has left. Find someone new?</p>
-              <div class="flex gap-3 justify-center">
-                <button (click)="startSearch()" class="btn-primary px-6">
-                  <span class="flex items-center gap-2">
-                    <span class="material-symbols-outlined">search</span> Find Next
-                  </span>
-                </button>
-                <button (click)="goHome()" class="btn-ghost px-6">Leave</button>
-              </div>
-            </div>
-          </div>
-        }
       </div>
 
       <!-- Chat Sidebar -->
-      <aside class="w-full md:w-[380px] flex flex-col bg-surface-container/40 backdrop-blur-md border-l border-outline-variant/20"
-             [class.hidden]="!showChat() && state() !== 'connected'"
-             [class.md:flex]="true"
+      <aside class="md:w-[380px] flex flex-col bg-surface-container/40 backdrop-blur-md border-l border-outline-variant/20
+                     md:relative md:flex"
+             [class.hidden]="!showChat()"
              [class.fixed]="showChat()"
-             [class.md:relative]="true"
              [class.inset-0]="showChat()"
              [class.z-40]="showChat()"
-             [class.pt-16]="showChat()">
+             [class.pt-16]="showChat()"
+             [class.md:block]="state() === 'connected'">>
 
         <!-- Chat Header -->
         <div class="flex items-center justify-between p-4 border-b border-outline-variant/20">
@@ -257,6 +327,18 @@ type RoomState = 'idle' | 'searching' | 'connected' | 'peer-disconnected';
   styles: [`
     .mirror { transform: scaleX(-1); }
     video { background-color: #0c0e18; }
+
+    @media (max-width: 380px) {
+      .compact-action-label {
+        display: none;
+      }
+
+      .compact-action-btn {
+        min-width: 40px;
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+      }
+    }
   `]
 })
 export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
@@ -271,9 +353,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   isTyping = signal(false);
   queuePosition = signal(0);
   currentSessionId = '';
+  showPreferences = signal(false);
+  selectedGender = '';
+  peerName = signal('Stranger');
+  private hasStartupPreference = false;
 
   private subs: Subscription[] = [];
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
+  private searchRelaxTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     public socketService: SocketService,
@@ -283,6 +370,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    const storedGender = sessionStorage.getItem('anonconnect.preferredGender');
+    if (storedGender !== null) {
+      this.selectedGender = storedGender;
+      this.hasStartupPreference = true;
+    }
+
     // Ensure socket connected
     this.socketService.connect();
 
@@ -317,32 +410,47 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     // Match found
     this.subs.push(
       this.socketService.matchFound$.subscribe(async (match) => {
+        this.clearSearchRelaxTimer();
         this.state.set('connected');
         this.currentSessionId = match.sessionId;
+        this.peerName.set(match.peerName || 'Stranger');
         this.messages.set([]);
         this.showChat.set(true);
         await this.webrtcService.createPeerConnection(match.peerSocketId, match.initiator);
       })
     );
 
-    // Chat messages
+    // Chat messages (only from peer — own messages are added locally in sendMessage)
     this.subs.push(
       this.socketService.chatMessage$.subscribe((msg) => {
-        const userId = this.authService.currentUser()?.userId;
         this.messages.update(msgs => [...msgs, {
           content: msg.content,
           senderId: msg.senderId,
-          isOwn: msg.senderId === userId,
+          isOwn: false,
           timestamp: new Date(msg.timestamp),
         }]);
       })
     );
 
-    // Peer disconnected
+    // Peer disconnected — auto-search for next person
     this.subs.push(
       this.socketService.peerDisconnected$.subscribe(() => {
-        this.state.set('peer-disconnected');
         this.webrtcService.cleanup();
+        this.messages.set([]);
+        this.isTyping.set(false);
+        this.state.set('searching');
+        const prefs = this.selectedGender ? { preferredGender: this.selectedGender } : {};
+        this.socketService.joinQueue(prefs);
+        this.startSearchRelaxTimer();
+      })
+    );
+
+    // Peer clicked Next — auto-search for new match
+    this.subs.push(
+      this.socketService.peerNext$.subscribe(() => {
+        this.webrtcService.cleanup();
+        this.state.set('searching');
+        this.messages.set([]);
       })
     );
 
@@ -363,6 +471,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.subs.push(
       this.socketService.searching$.subscribe(() => {
         this.state.set('searching');
+        this.startSearchRelaxTimer();
       })
     );
   }
@@ -373,19 +482,46 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
-    this.webrtcService.cleanup();
+    this.webrtcService.fullCleanup();
     this.socketService.endSession();
     if (this.typingTimeout) clearTimeout(this.typingTimeout);
+    this.clearSearchRelaxTimer();
   }
 
   startSearch(): void {
+    if (this.hasStartupPreference) {
+      this.confirmPreferences();
+      return;
+    }
+
+    this.showPreferences.set(true);
+  }
+
+  confirmPreferences(): void {
+    this.hasStartupPreference = true;
+    sessionStorage.setItem('anonconnect.preferredGender', this.selectedGender);
+    this.showPreferences.set(false);
+    this.state.set('searching');
+    this.messages.set([]);
+    const prefs = this.selectedGender ? { preferredGender: this.selectedGender } : {};
+    this.socketService.joinQueue(prefs);
+    this.startSearchRelaxTimer();
+  }
+
+  skipPreferences(): void {
+    this.hasStartupPreference = true;
+    this.showPreferences.set(false);
+    this.selectedGender = '';
+    sessionStorage.setItem('anonconnect.preferredGender', '');
     this.state.set('searching');
     this.messages.set([]);
     this.socketService.joinQueue();
+    this.startSearchRelaxTimer();
   }
 
   cancelSearch(): void {
     this.state.set('idle');
+    this.clearSearchRelaxTimer();
     this.socketService.leaveQueue();
   }
 
@@ -393,14 +529,43 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.webrtcService.cleanup();
     this.state.set('searching');
     this.messages.set([]);
+    this.isTyping.set(false);
     this.socketService.nextUser();
+    this.startSearchRelaxTimer();
+    // Server re-queues us; we just need to wait for match-found
   }
 
   endSession(): void {
     this.webrtcService.cleanup();
     this.socketService.endSession();
     this.state.set('idle');
+    this.clearSearchRelaxTimer();
+    this.peerName.set('Stranger');
     this.messages.set([]);
+    this.isTyping.set(false);
+  }
+
+  private startSearchRelaxTimer(): void {
+    this.clearSearchRelaxTimer();
+
+    // If user already allows anyone, no need to relax filters.
+    if (!this.selectedGender) return;
+
+    this.searchRelaxTimer = setTimeout(() => {
+      if (this.state() !== 'searching') return;
+
+      // Expand pool after waiting to reduce long search times.
+      this.socketService.leaveQueue();
+      this.socketService.joinQueue();
+      this.queuePosition.set(0);
+    }, 12000);
+  }
+
+  private clearSearchRelaxTimer(): void {
+    if (this.searchRelaxTimer) {
+      clearTimeout(this.searchRelaxTimer);
+      this.searchRelaxTimer = null;
+    }
   }
 
   sendMessage(): void {
@@ -435,7 +600,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   goHome(): void {
-    this.webrtcService.cleanup();
+    this.webrtcService.fullCleanup();
     this.router.navigate(['/']);
   }
 

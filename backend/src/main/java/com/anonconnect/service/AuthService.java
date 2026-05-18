@@ -80,9 +80,16 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponse createAnonymousSession() {
-        String anonUsername = "anon_" + System.currentTimeMillis();
+    public AuthResponse createAnonymousSession(String displayName) {
+        String anonUsername = (displayName != null && !displayName.isBlank())
+                ? displayName.trim()
+                : "anon_" + System.currentTimeMillis();
         String anonPassword = java.util.UUID.randomUUID().toString();
+
+        // If username taken, append random suffix
+        if (userRepository.existsByUsername(anonUsername)) {
+            anonUsername = anonUsername + "_" + (System.currentTimeMillis() % 10000);
+        }
 
         RegisterRequest request = new RegisterRequest();
         request.setUsername(anonUsername);

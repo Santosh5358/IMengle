@@ -8,6 +8,7 @@ export interface MatchFoundEvent {
   sessionId: string;
   peerId: string;
   peerSocketId: string;
+  peerName: string;
   initiator: boolean;
 }
 
@@ -28,6 +29,7 @@ export class SocketService {
   readonly matchFound$ = new Subject<MatchFoundEvent>();
   readonly chatMessage$ = new Subject<ChatMessageEvent>();
   readonly peerDisconnected$ = new Subject<void>();
+  readonly peerNext$ = new Subject<void>();
   readonly typing$ = new Subject<string>();
   readonly stopTyping$ = new Subject<string>();
   readonly searching$ = new Subject<void>();
@@ -77,6 +79,10 @@ export class SocketService {
 
     this.socket.on('peer-disconnected', () => {
       this.peerDisconnected$.next();
+    });
+
+    this.socket.on('peer-next', () => {
+      this.peerNext$.next();
     });
 
     this.socket.on('typing', (data: { userId: string }) => {

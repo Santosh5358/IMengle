@@ -14,7 +14,6 @@ export class WebrtcService {
   readonly connectionState = signal<RTCPeerConnectionState>('new');
   readonly isMuted = signal(false);
   readonly isCameraOff = signal(false);
-  readonly isScreenSharing = signal(false);
 
   constructor(private socketService: SocketService) {
     this.setupSignalingListeners();
@@ -38,7 +37,11 @@ export class WebrtcService {
   async startLocalStream(): Promise<MediaStream> {
     this.localStream = await navigator.mediaDevices.getUserMedia({
       video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
-      audio: true,
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
     });
     this.localStream$.next(this.localStream);
     return this.localStream;
@@ -57,11 +60,11 @@ export class WebrtcService {
       });
     }
 
-    // Handle remote stream
+    // Handle remote stream — emit as soon as any track arrives
+    const remoteStream = new MediaStream();
     this.peerConnection.ontrack = (event) => {
-      if (event.streams[0]) {
-        this.remoteStream$.next(event.streams[0]);
-      }
+      remoteStream.addTrack(event.track);
+      this.remoteStream$.next(remoteStream);
     };
 
     // ICE candidates
@@ -80,7 +83,10 @@ export class WebrtcService {
 
     // If initiator, create and send offer
     if (isInitiator) {
-      const offer = await this.peerConnection.createOffer();
+      const offer = await this.peerConnection.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true,
+      });
       await this.peerConnection.setLocalDescription(offer);
       this.socketService.sendOffer(peerSocketId, offer);
     }
@@ -128,38 +134,19 @@ export class WebrtcService {
     }
   }
 
-  async toggleScreenShare(): Promise<void> {
-    if (this.isScreenSharing()) {
-      // Switch back to camera
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const videoTrack = stream.getVideoTracks()[0];
-      const sender = this.peerConnection?.getSenders().find(s => s.track?.kind === 'video');
-      if (sender && videoTrack) {
-        await sender.replaceTrack(videoTrack);
-      }
-      this.isScreenSharing.set(false);
-    } else {
-      // Start screen sharing
-      const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-      const screenTrack = screenStream.getVideoTracks()[0];
-      const sender = this.peerConnection?.getSenders().find(s => s.track?.kind === 'video');
-      if (sender && screenTrack) {
-        await sender.replaceTrack(screenTrack);
-        screenTrack.onended = () => this.toggleScreenShare();
-      }
-      this.isScreenSharing.set(true);
-    }
-  }
-
   cleanup(): void {
     this.peerConnection?.close();
     this.peerConnection = null;
-    this.localStream?.getTracks().forEach(track => track.stop());
-    this.localStream = null;
+    // Keep local stream alive so camera stays on between sessions
     this.peerSocketId = null;
     this.connectionState.set('new');
+  }
+
+  fullCleanup(): void {
+    this.cleanup();
+    this.localStream?.getTracks().forEach(track => track.stop());
+    this.localStream = null;
     this.isMuted.set(false);
     this.isCameraOff.set(false);
-    this.isScreenSharing.set(false);
   }
 }

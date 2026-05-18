@@ -28,8 +28,9 @@ public class AuthController {
     }
 
     @PostMapping("/anonymous")
-    public ResponseEntity<ApiResponse<AuthResponse>> anonymous() {
-        AuthResponse response = authService.createAnonymousSession();
+    public ResponseEntity<ApiResponse<AuthResponse>> anonymous(@RequestBody(required = false) java.util.Map<String, String> body) {
+        String displayName = (body != null) ? body.get("displayName") : null;
+        AuthResponse response = authService.createAnonymousSession(displayName);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok("Anonymous session created", response));
     }
 }

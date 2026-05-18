@@ -111,12 +111,24 @@ public class MatchmakingService {
         if (p1 == null && p2 == null) return true;
         if (p1 == null || p2 == null) return true;
 
-        if (p1.getPreferredGender() != null && p2.getPreferredGender() != null) {
-            return true;
+        // Check gender preference: if user1 wants "female", user2's gender should match
+        // Since we only have "preferredGender" (what they want to talk to), match them crosswise
+        String g1 = p1.getPreferredGender();
+        String g2 = p2.getPreferredGender();
+
+        // Both have preferences — they must want the same pool (or either is null/any)
+        if (g1 != null && !g1.isBlank() && g2 != null && !g2.isBlank()) {
+            // Both specified a preference — only compatible if they picked each other's preference
+            // e.g. user1 wants "female", user2 wants "male" → compatible
+            // user1 wants "female", user2 wants "female" → not compatible (both want female)
+            if (g1.equalsIgnoreCase(g2)) return false;
         }
 
-        if (p1.getPreferredCountry() != null && p2.getPreferredCountry() != null) {
-            return p1.getPreferredCountry().equalsIgnoreCase(p2.getPreferredCountry());
+        // Country filter
+        String c1 = p1.getPreferredCountry();
+        String c2 = p2.getPreferredCountry();
+        if (c1 != null && !c1.isBlank() && c2 != null && !c2.isBlank()) {
+            return c1.equalsIgnoreCase(c2);
         }
 
         return true;

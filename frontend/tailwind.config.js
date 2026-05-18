@@ -64,6 +64,7 @@ module.exports = {
           magenta: '#ebb2ff',
           violet: '#d0bcff',
           pink: '#ffafd3',
+          lime: '#a3e635',
         },
       },
       fontFamily: {

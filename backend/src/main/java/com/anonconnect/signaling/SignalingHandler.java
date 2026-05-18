@@ -203,33 +203,17 @@ public class SignalingHandler {
             // Persist message
             chatService.saveMessage(sessionId, userId, content, "TEXT");
 
-            // Forward to peer
+            // Forward to peer using socketUserMap (always has connected users)
             String[] sessionUsers = activeSessions.get(sessionId);
             if (sessionUsers != null) {
                 String peerId = sessionUsers[0].equals(userId) ? sessionUsers[1] : sessionUsers[0];
-                String peerSocketId = matchmakingService.getSocketId(peerId);
-                // The peer might not be in the queue map; check active connections
-                if (peerSocketId == null) {
-                    activeConnectionRepository.findByUserId(peerId)
-                            .ifPresent(conn -> {
-                                SocketIOClient peer = server.getClient(UUID.fromString(conn.getSocketId()));
-                                if (peer != null) {
-                                    peer.sendEvent("chat-message", Map.of(
-                                            "content", content,
-                                            "senderId", userId,
-                                            "timestamp", Instant.now().toString()
-                                    ));
-                                }
-                            });
-                } else {
-                    SocketIOClient peer = server.getClient(UUID.fromString(peerSocketId));
-                    if (peer != null) {
-                        peer.sendEvent("chat-message", Map.of(
-                                "content", content,
-                                "senderId", userId,
-                                "timestamp", Instant.now().toString()
-                        ));
-                    }
+                SocketIOClient peer = findClientByUserId(peerId);
+                if (peer != null) {
+                    peer.sendEvent("chat-message", Map.of(
+                            "content", content,
+                            "senderId", userId,
+                            "timestamp", Instant.now().toString()
+                    ));
                 }
             }
         };
@@ -253,8 +237,28 @@ public class SignalingHandler {
         return (client, data, ackRequest) -> {
             String userId = socketUserMap.get(client.getSessionId());
             if (userId != null) {
-                handleUserDisconnect(userId);
-                // Re-add to queue
+                // End current session and notify peer to auto-search
+                String sessionId = userSessionMap.remove(userId);
+                if (sessionId != null) {
+                    String[] sessionUsers = activeSessions.remove(sessionId);
+                    if (sessionUsers != null) {
+                        chatService.endSession(sessionId);
+                        String peerId = sessionUsers[0].equals(userId) ? sessionUsers[1] : sessionUsers[0];
+                        userSessionMap.remove(peerId);
+
+                        // Notify peer and auto-re-queue them
+                        SocketIOClient peer = findClientByUserId(peerId);
+                        if (peer != null) {
+                            peer.sendEvent("peer-next");
+                            matchmakingService.addToQueue(peerId, peer.getSessionId().toString(), null);
+                            peer.sendEvent("searching");
+                            // Try to find a match for the peer too
+                            matchmakingService.findMatch(peerId).ifPresent(this::initiateMatch);
+                        }
+                    }
+                }
+
+                // Re-add current user to queue
                 matchmakingService.addToQueue(userId, client.getSessionId().toString(), null);
                 client.sendEvent("searching");
 
@@ -291,11 +295,16 @@ public class SignalingHandler {
         SocketIOClient client1 = server.getClient(UUID.fromString(socketId1));
         SocketIOClient client2 = server.getClient(UUID.fromString(socketId2));
 
+        // Lookup usernames for display
+        String username1 = userRepository.findById(userId1).map(u -> u.getUsername()).orElse("Stranger");
+        String username2 = userRepository.findById(userId2).map(u -> u.getUsername()).orElse("Stranger");
+
         if (client1 != null) {
             client1.sendEvent("match-found", Map.of(
                     "sessionId", sessionId,
                     "peerId", userId2,
                     "peerSocketId", socketId2,
+                    "peerName", username2,
                     "initiator", true
             ));
         }
@@ -305,6 +314,7 @@ public class SignalingHandler {
                     "sessionId", sessionId,
                     "peerId", userId1,
                     "peerSocketId", socketId1,
+                    "peerName", username1,
                     "initiator", false
             ));
         }
@@ -322,15 +332,21 @@ public class SignalingHandler {
                 userSessionMap.remove(peerId);
 
                 // Notify peer
-                activeConnectionRepository.findByUserId(peerId)
-                        .ifPresent(conn -> {
-                            SocketIOClient peer = server.getClient(UUID.fromString(conn.getSocketId()));
-                            if (peer != null) {
-                                peer.sendEvent("peer-disconnected");
-                            }
-                        });
+                SocketIOClient peer = findClientByUserId(peerId);
+                if (peer != null) {
+                    peer.sendEvent("peer-disconnected");
+                }
             }
         }
+    }
+
+    private SocketIOClient findClientByUserId(String targetUserId) {
+        for (Map.Entry<UUID, String> entry : socketUserMap.entrySet()) {
+            if (entry.getValue().equals(targetUserId)) {
+                return server.getClient(entry.getKey());
+            }
+        }
+        return null;
     }
 
     private void forwardToPeer(SocketIOClient client, String event, Map<String, Object> data) {
@@ -344,17 +360,14 @@ public class SignalingHandler {
         if (sessionUsers == null) return;
 
         String peerId = sessionUsers[0].equals(userId) ? sessionUsers[1] : sessionUsers[0];
-        activeConnectionRepository.findByUserId(peerId)
-                .ifPresent(conn -> {
-                    SocketIOClient peer = server.getClient(UUID.fromString(conn.getSocketId()));
-                    if (peer != null) {
-                        peer.sendEvent(event, data);
-                    }
-                });
+        SocketIOClient peer = findClientByUserId(peerId);
+        if (peer != null) {
+            peer.sendEvent(event, data);
+        }
     }
 
     private void broadcastOnlineCount() {
-        long count = activeConnectionRepository.count();
+        int count = socketUserMap.size();
         server.getBroadcastOperations().sendEvent("online-count", Map.of("count", count));
     }
 }

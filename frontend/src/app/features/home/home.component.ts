@@ -53,7 +53,7 @@ import { SocketService } from '../../core/services/socket.service';
         <!-- Start Button -->
         <div class="animate-fadeInUp mt-10 flex flex-col sm:flex-row gap-4" style="animation-delay: 0.3s;">
           @if (!authService.isAuthenticated()) {
-            <button (click)="startAnonymous()"
+            <button (click)="showNameInput.set(true)"
                     [disabled]="isLoading()"
                     class="btn-primary text-lg px-10 py-4 neon-glow-cyan">
               <span class="flex items-center gap-2">
@@ -213,15 +213,95 @@ import { SocketService } from '../../core/services/socket.service';
           </div>
         </div>
       }
+
+      <!-- Name Input Modal -->
+      @if (showNameInput()) {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+             (click)="showNameInput.set(false)">
+          <div class="glass-strong p-8 rounded-2xl max-w-md w-full mx-4 animate-scaleIn neon-border-cyan"
+               (click)="$event.stopPropagation()">
+            <div class="text-center mb-6">
+              <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-neon-cyan/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-neon-cyan text-3xl">badge</span>
+              </div>
+              <h2 class="font-display font-bold text-headline-md text-on-surface mb-2">Choose Your Name</h2>
+              <p class="text-body-md text-on-surface-variant">This name will be shown to the person you match with.</p>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-label-md text-on-surface-variant mb-2 font-display">Display Name</label>
+                <input [(ngModel)]="displayName"
+                       (keyup.enter)="startAnonymous()"
+                       type="text"
+                       maxlength="24"
+                       placeholder="Enter your name"
+                       class="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/30
+                              text-on-surface placeholder:text-outline focus:outline-none focus:border-neon-cyan/50
+                              focus:shadow-neon-cyan/20 transition-all">
+              </div>
+
+              <div>
+                <label class="block text-label-md text-on-surface-variant mb-3 font-display">Who do you want to talk to?</label>
+                <div class="grid grid-cols-3 gap-3">
+                  <button type="button"
+                          (click)="preferredGender = 'male'"
+                          class="rounded-xl border px-3 py-3 text-center transition-all"
+                          [class]="preferredGender === 'male'
+                            ? 'border-neon-cyan bg-neon-cyan/10 text-neon-cyan'
+                            : 'border-outline-variant/30 bg-surface-container-low text-on-surface-variant hover:border-neon-cyan/40'">
+                    <span class="material-symbols-outlined block text-xl mb-1">male</span>
+                    <span class="text-label-sm font-display">Male</span>
+                  </button>
+                  <button type="button"
+                          (click)="preferredGender = 'female'"
+                          class="rounded-xl border px-3 py-3 text-center transition-all"
+                          [class]="preferredGender === 'female'
+                            ? 'border-neon-magenta bg-neon-magenta/10 text-neon-magenta'
+                            : 'border-outline-variant/30 bg-surface-container-low text-on-surface-variant hover:border-neon-magenta/40'">
+                    <span class="material-symbols-outlined block text-xl mb-1">female</span>
+                    <span class="text-label-sm font-display">Female</span>
+                  </button>
+                  <button type="button"
+                          (click)="preferredGender = ''"
+                          class="rounded-xl border px-3 py-3 text-center transition-all"
+                          [class]="preferredGender === ''
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-outline-variant/30 bg-surface-container-low text-on-surface-variant hover:border-primary/40'">
+                    <span class="material-symbols-outlined block text-xl mb-1">groups</span>
+                    <span class="text-label-sm font-display">Anyone</span>
+                  </button>
+                </div>
+              </div>
+
+              <p class="text-label-sm text-on-surface-variant">Your name is optional. Your gender preference will be used when searching for a match.</p>
+
+              <div class="flex gap-3">
+                <button (click)="showNameInput.set(false)"
+                        class="btn-ghost flex-1 py-3">
+                  Cancel
+                </button>
+                <button (click)="startAnonymous()" [disabled]="isLoading()"
+                        class="btn-primary flex-1 py-3">
+                  {{ isLoading() ? 'Connecting...' : 'Continue' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   `,
 })
 export class HomeComponent {
   showLogin = signal(false);
   showRegister = signal(false);
+  showNameInput = signal(false);
   isLoading = signal(false);
   loginError = signal('');
 
+  displayName = '';
+  preferredGender = '';
   loginUsername = '';
   loginPassword = '';
   regUsername = '';
@@ -238,8 +318,10 @@ export class HomeComponent {
   }
 
   startAnonymous(): void {
+    this.showNameInput.set(false);
     this.isLoading.set(true);
-    this.authService.createAnonymousSession().subscribe({
+    sessionStorage.setItem('anonconnect.preferredGender', this.preferredGender);
+    this.authService.createAnonymousSession(this.displayName || undefined).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.socketService.connect();

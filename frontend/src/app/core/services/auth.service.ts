@@ -38,8 +38,15 @@ export class AuthService {
     }).pipe(tap(res => this.handleAuth(res.data)));
   }
 
-  createAnonymousSession(): Observable<ApiResponse<AuthResponse>> {
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/auth/anonymous`, {})
+  createAnonymousSession(displayName?: string): Observable<ApiResponse<AuthResponse>> {
+    // If already authenticated with a valid token, reuse the session
+    if (this.hasToken() && this.currentUser()) {
+      return new Observable(sub => {
+        sub.next({ success: true, message: 'Session restored', data: this.currentUser()! });
+        sub.complete();
+      });
+    }
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/auth/anonymous`, { displayName: displayName || null })
       .pipe(tap(res => this.handleAuth(res.data)));
   }
 
