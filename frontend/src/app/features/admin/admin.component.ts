@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { environment } from '@env/environment';
 
 interface DashboardStats {
@@ -31,10 +31,24 @@ interface ApiPage<T> {
   number: number;
 }
 
+interface ReportDTO {
+  id: string;
+  _id?: string;
+  reporterId: string;
+  reporterUsername: string;
+  reportedId: string;
+  reportedUsername: string;
+  sessionId: string;
+  reason: string;
+  description: string;
+  status: string;
+  createdAt: string;
+}
+
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, DatePipe],
   template: `
     <div class="min-h-screen pt-16 flex">
       <!-- Sidebar -->
@@ -103,56 +117,63 @@ interface ApiPage<T> {
         @if (activeTab() === 'users') {
           <h1 class="font-display font-bold text-headline-lg text-on-surface mb-6">Users</h1>
 
-          <div class="glass overflow-hidden">
-            <table class="w-full">
-              <thead>
-                <tr class="border-b border-outline-variant/20">
-                  <th class="text-left px-6 py-4 text-label-md text-on-surface-variant font-display">Username</th>
-                  <th class="text-left px-6 py-4 text-label-md text-on-surface-variant font-display hidden md:table-cell">Country</th>
-                  <th class="text-left px-6 py-4 text-label-md text-on-surface-variant font-display hidden md:table-cell">Role</th>
-                  <th class="text-left px-6 py-4 text-label-md text-on-surface-variant font-display">Status</th>
-                  <th class="text-right px-6 py-4 text-label-md text-on-surface-variant font-display">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (user of users(); track user.id) {
-                  <tr class="border-b border-outline-variant/10 hover:bg-surface-container-high/30 transition-colors">
-                    <td class="px-6 py-4 text-on-surface">{{ user.username }}</td>
-                    <td class="px-6 py-4 text-on-surface-variant hidden md:table-cell">{{ user.country || '—' }}</td>
-                    <td class="px-6 py-4 hidden md:table-cell">
-                      <span class="px-2 py-1 rounded-md text-label-sm font-display"
-                            [class]="user.role === 'ADMIN' ? 'bg-primary/20 text-primary' : 'bg-surface-container-high text-on-surface-variant'">
-                        {{ user.role }}
-                      </span>
-                    </td>
-                    <td class="px-6 py-4">
-                      <span class="flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full" [class]="user.isBanned ? 'bg-error' : 'bg-green-400'"></span>
-                        <span class="text-label-sm" [class]="user.isBanned ? 'text-error' : 'text-green-400'">
-                          {{ user.isBanned ? 'Banned' : 'Active' }}
-                        </span>
-                      </span>
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                      @if (user.isBanned) {
-                        <button (click)="unbanUser(user.id)"
-                                class="px-3 py-1.5 rounded-lg text-label-sm font-display bg-green-400/10 text-green-400
-                                       hover:bg-green-400/20 transition-all">
-                          Unban
-                        </button>
-                      } @else {
-                        <button (click)="banUser(user.id)"
-                                class="px-3 py-1.5 rounded-lg text-label-sm font-display bg-error/10 text-error
-                                       hover:bg-error/20 transition-all">
-                          Ban
-                        </button>
-                      }
-                    </td>
+          @if (users().length === 0) {
+            <div class="glass p-6 text-center text-on-surface-variant">
+              <span class="material-symbols-outlined text-4xl mb-2">group_off</span>
+              <p>No users found yet.</p>
+            </div>
+          } @else {
+            <div class="glass overflow-hidden">
+              <table class="w-full">
+                <thead>
+                  <tr class="border-b border-outline-variant/20">
+                    <th class="text-left px-6 py-4 text-label-md text-on-surface-variant font-display">Username</th>
+                    <th class="text-left px-6 py-4 text-label-md text-on-surface-variant font-display hidden md:table-cell">Country</th>
+                    <th class="text-left px-6 py-4 text-label-md text-on-surface-variant font-display hidden md:table-cell">Role</th>
+                    <th class="text-left px-6 py-4 text-label-md text-on-surface-variant font-display">Status</th>
+                    <th class="text-right px-6 py-4 text-label-md text-on-surface-variant font-display">Actions</th>
                   </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  @for (user of users(); track user.id) {
+                    <tr class="border-b border-outline-variant/10 hover:bg-surface-container-high/30 transition-colors">
+                      <td class="px-6 py-4 text-on-surface">{{ user.username }}</td>
+                      <td class="px-6 py-4 text-on-surface-variant hidden md:table-cell">{{ user.country || '—' }}</td>
+                      <td class="px-6 py-4 hidden md:table-cell">
+                        <span class="px-2 py-1 rounded-md text-label-sm font-display"
+                              [class]="user.role === 'ADMIN' ? 'bg-primary/20 text-primary' : 'bg-surface-container-high text-on-surface-variant'">
+                          {{ user.role }}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4">
+                        <span class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full" [class]="user.isBanned ? 'bg-error' : 'bg-green-400'"></span>
+                          <span class="text-label-sm" [class]="user.isBanned ? 'text-error' : 'text-green-400'">
+                            {{ user.isBanned ? 'Banned' : 'Active' }}
+                          </span>
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 text-right">
+                        @if (user.isBanned) {
+                          <button (click)="unbanUser(user.id)"
+                                  class="px-3 py-1.5 rounded-lg text-label-sm font-display bg-green-400/10 text-green-400
+                                         hover:bg-green-400/20 transition-all">
+                            Unban
+                          </button>
+                        } @else {
+                          <button (click)="banUser(user.id)"
+                                  class="px-3 py-1.5 rounded-lg text-label-sm font-display bg-error/10 text-error
+                                         hover:bg-error/20 transition-all">
+                            Ban
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
         }
 
         @if (activeTab() === 'reports') {
@@ -161,10 +182,87 @@ interface ApiPage<T> {
             <span class="ml-2 text-label-md text-neon-cyan">({{ stats()?.pendingReports || 0 }})</span>
           </h1>
 
-          <div class="space-y-4">
+          @if (reports().length === 0) {
             <div class="glass p-6 text-center text-on-surface-variant">
               <span class="material-symbols-outlined text-4xl mb-2">gavel</span>
-              <p>Reports will appear here when users submit them.</p>
+              <p>No reports available right now.</p>
+              <p class="text-label-sm mt-2">When users submit reports, they will show up in this section.</p>
+            </div>
+          } @else {
+            <div class="space-y-4">
+              @for (report of reports(); track getReportId(report)) {
+                <div class="glass p-5">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <div class="flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-error">flag</span>
+                        <span class="font-display text-label-md text-on-surface">{{ report.reason }}</span>
+                        <span class="px-2 py-0.5 rounded-md text-label-sm bg-error/10 text-error">{{ report.status }}</span>
+                      </div>
+                      <p class="text-body-md text-on-surface-variant mb-2">{{ report.description || 'No additional details provided.' }}</p>
+                      <div class="text-label-sm text-on-surface-variant">
+                        Reporter: {{ report.reporterUsername || report.reporterId }} • Reported: {{ report.reportedUsername || report.reportedId }}
+                      </div>
+                      <div class="text-label-sm text-on-surface-variant">
+                        Session: {{ report.sessionId || 'N/A' }}
+                      </div>
+                      <div class="text-label-sm text-on-surface-variant">
+                        Reported At: {{ report.createdAt ? (report.createdAt | date:'yyyy-MM-dd HH:mm') : 'N/A' }}
+                      </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                      <button (click)="resolveReport(getReportId(report), 'RESOLVED')"
+                              class="px-3 py-1.5 rounded-lg text-label-sm font-display bg-green-400/10 text-green-400 hover:bg-green-400/20 transition-all">
+                        Resolve
+                      </button>
+                      <button (click)="resolveReport(getReportId(report), 'BANNED')"
+                              class="px-3 py-1.5 rounded-lg text-label-sm font-display bg-error/10 text-error hover:bg-error/20 transition-all">
+                        Ban User
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
+
+        @if (activeTab() === 'settings') {
+          <h1 class="font-display font-bold text-headline-lg text-on-surface mb-6">Settings</h1>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="glass p-6">
+              <h3 class="font-display font-semibold text-lg text-on-surface mb-2">Platform Defaults</h3>
+              <p class="text-on-surface-variant text-body-md mb-4">
+                Configure moderation and matchmaking defaults for all users.
+              </p>
+              <div class="space-y-3 text-on-surface-variant text-body-md">
+                <div class="flex items-center justify-between">
+                  <span>Auto-moderation</span>
+                  <span class="text-neon-cyan">Enabled</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Match timeout</span>
+                  <span>12 sec</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Max report retries</span>
+                  <span>3</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass p-6">
+              <h3 class="font-display font-semibold text-lg text-on-surface mb-2">Admin Access</h3>
+              <p class="text-on-surface-variant text-body-md mb-4">
+                Review current admin-level capabilities.
+              </p>
+              <ul class="space-y-2 text-on-surface-variant text-body-md">
+                <li>• Ban/unban users</li>
+                <li>• View live usage stats</li>
+                <li>• Monitor pending reports</li>
+              </ul>
             </div>
           </div>
         }
@@ -176,6 +274,7 @@ export class AdminComponent implements OnInit {
   activeTab = signal('dashboard');
   stats = signal<DashboardStats | null>(null);
   users = signal<UserDTO[]>([]);
+  reports = signal<ReportDTO[]>([]);
 
   navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
@@ -191,6 +290,7 @@ export class AdminComponent implements OnInit {
   ngOnInit(): void {
     this.loadDashboard();
     this.loadUsers();
+    this.loadReports();
   }
 
   loadDashboard(): void {
@@ -211,6 +311,32 @@ export class AdminComponent implements OnInit {
   loadUsers(): void {
     this.http.get<{ data: ApiPage<UserDTO> }>(`${environment.apiUrl}/admin/users`).subscribe(res => {
       this.users.set(res.data.content);
+    });
+  }
+
+  loadReports(): void {
+    this.http.get<{ data: ApiPage<ReportDTO> }>(`${environment.apiUrl}/admin/reports`).subscribe(res => {
+      const normalized = (res.data.content || []).map(report => ({
+        ...report,
+        id: report.id || report._id || '',
+      }));
+      this.reports.set(normalized);
+    });
+  }
+
+  getReportId(report: ReportDTO): string {
+    return report.id || report._id || '';
+  }
+
+  resolveReport(reportId: string, action: 'RESOLVED' | 'BANNED'): void {
+    if (!reportId) {
+      console.error('Cannot resolve report: missing report ID');
+      return;
+    }
+    this.http.post(`${environment.apiUrl}/admin/reports/${reportId}/resolve?action=${action}`, {}).subscribe(() => {
+      this.loadReports();
+      this.loadDashboard();
+      if (action === 'BANNED') this.loadUsers();
     });
   }
 

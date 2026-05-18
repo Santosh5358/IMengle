@@ -4,77 +4,12 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
-/* ─── Original Dark Theme ───────────────────────────── */
 :root {
-  --surface: #11131d;
-  --surface-rgb: 17 19 29;
-  --surface-dim: #11131d;
-  --surface-dim-rgb: 17 19 29;
-  --surface-bright: #373844;
-  --surface-bright-rgb: 55 56 68;
-  --surface-container-lowest: #0c0e18;
-  --surface-container-lowest-rgb: 12 14 24;
-  --surface-container-low: #191b26;
-  --surface-container-low-rgb: 25 27 38;
-  --surface-container: #1d1f2a;
-  --surface-container-rgb: 29 31 42;
-  --surface-container-high: #282934;
-  --surface-container-high-rgb: 40 41 52;
-  --surface-container-highest: #32343f;
-  --surface-container-highest-rgb: 50 52 63;
-  
-  --on-surface: #e1e1f0;
-  --on-surface-rgb: 225 225 240;
-  --on-surface-variant: #cbc3d7;
-  --on-surface-variant-rgb: 203 195 215;
-  
-  --primary: #d0bcff;
-  --primary-rgb: 208 188 255;
-  --primary-container: #a078ff;
-  --primary-container-rgb: 160 120 255;
-  --on-primary: #3c0091;
-  --on-primary-rgb: 255 255 255;
-  --on-primary-container: #340080;
-  --on-primary-container-rgb: 52 0 128;
-  
-  --secondary: #5de6ff;
-  --secondary-rgb: 93 230 255;
-  --secondary-container: #00cbe6;
-  --secondary-container-rgb: 0 203 230;
-  --on-secondary: #00363e;
-  --on-secondary-rgb: 0 54 62;
-  --on-secondary-container: #00515d;
-  --on-secondary-container-rgb: 0 81 93;
-  
-  --tertiary: #ffafd3;
-  --tertiary-rgb: 255 175 211;
-  --tertiary-container: #e364a7;
-  --tertiary-container-rgb: 227 100 167;
-  --on-tertiary: #530037;
-  --on-tertiary-rgb: 83 0 55;
-  --on-tertiary-container: #dc68c2;
-  --on-tertiary-container-rgb: 220 104 194;
-  
-  --error: #ffb4ab;
-  --error-rgb: 255 180 171;
-  --error-container: #93000a;
-  --error-container-rgb: 147 0 10;
-  --on-error: #55180c;
-  --on-error-rgb: 85 24 12;
-  --on-error-container: #ffb4ab;
-  --on-error-container-rgb: 255 180 171;
-  
-  --outline: #958ea0;
-  --outline-rgb: 149 142 160;
-  --outline-variant: #494454;
-  --outline-variant-rgb: 73 68 84;
-  
   --neon-cyan: #00dbe9;
-  --neon-cyan-rgb: 0 219 233;
   --neon-violet: #d0bcff;
   --neon-magenta: #ebb2ff;
-  --neon-pink: #ffafd3;
-  --neon-lime: #a3e635;
+  --surface: #11131d;
+  --surface-container: #1d1f2a;
 }
 
 * {
@@ -87,10 +22,7 @@ html, body {
   height: 100%;
   font-family: 'Inter', sans-serif;
   background-color: var(--surface);
-  background-image:
-    radial-gradient(circle at 18% 10%, rgba(var(--neon-cyan-rgb), 0.12), transparent 35%),
-    radial-gradient(circle at 82% 18%, rgba(235, 178, 255, 0.1), transparent 40%);
-  color: var(--on-surface);
+  color: #e1e1f0;
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
@@ -98,18 +30,11 @@ html, body {
 /* ─── Glassmorphism Utility ──────────────────────────── */
 @layer components {
   .glass {
-    background-color: rgba(var(--surface-container-rgb), 0.72);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(var(--outline-variant-rgb), 0.45);
-    border-radius: 0.75rem;
+    @apply bg-surface-container/60 backdrop-blur-[16px] border border-outline-variant/30 rounded-xl;
   }
 
   .glass-strong {
-    background-color: rgba(var(--surface-container-rgb), 0.86);
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(var(--outline-variant-rgb), 0.5);
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 35px -22px rgba(var(--on-surface-rgb), 0.5);
+    @apply bg-surface-container/80 backdrop-blur-[24px] border border-outline-variant/40 rounded-xl;
   }
 
   .neon-border-cyan {
@@ -141,70 +66,26 @@ html, body {
   }
 
   .btn-primary {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 0.875rem;
-    letter-spacing: 0.1em;
-    background: linear-gradient(90deg, var(--neon-cyan), var(--secondary-container));
-    color: var(--on-secondary-container);
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 0 20px rgba(0, 219, 233, 0.3);
-    transition: all 0.3s ease;
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 0 30px rgba(0, 219, 233, 0.6);
-  }
-
-  .btn-primary:active {
-    transform: scale(0.95);
+    @apply px-6 py-3 rounded-xl font-display font-semibold text-sm tracking-wider
+           bg-gradient-to-r from-neon-cyan to-secondary-container
+           text-on-secondary-container
+           hover:shadow-neon-cyan transition-all duration-300
+           active:scale-95;
   }
 
   .btn-danger {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 0.875rem;
-    letter-spacing: 0.1em;
-    background: linear-gradient(90deg, var(--error), var(--error-container));
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .btn-danger:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .btn-danger:active {
-    transform: scale(0.95);
+    @apply px-6 py-3 rounded-xl font-display font-semibold text-sm tracking-wider
+           bg-gradient-to-r from-error to-error-container
+           text-white
+           hover:shadow-lg transition-all duration-300
+           active:scale-95;
   }
 
   .btn-ghost {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 0.875rem;
-    letter-spacing: 0.1em;
-    border: 1px solid rgba(var(--outline-variant-rgb), 0.4);
-    color: var(--on-surface);
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .btn-ghost:hover {
-    background-color: rgba(var(--surface-container-high-rgb), 0.5);
-  }
-
-  .btn-ghost:active {
-    transform: scale(0.95);
+    @apply px-6 py-3 rounded-xl font-display font-semibold text-sm tracking-wider
+           border border-outline-variant/40 text-on-surface
+           hover:bg-surface-container-high/50 transition-all duration-300
+           active:scale-95;
   }
 }
 
@@ -213,14 +94,14 @@ html, body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(var(--surface-container-low-rgb), 0.8);
+  background: #11131d;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(var(--outline-rgb), 0.7);
+  background: #494454;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--outline-rgb), 1);
+  background: #958ea0;
 }
 
 /* ─── Animations ─────────────────────────────────────── */

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -52,16 +53,28 @@ public class AdminService {
             throw new AppException(HttpStatus.NOT_FOUND, "Admin not found");
         }
 
-        report.setStatus(action.toUpperCase());
+        String resolvedAction = action.toUpperCase();
+
+        if ("BANNED".equalsIgnoreCase(resolvedAction)) {
+            String reportedUserId = report.getReportedId();
+            if (!StringUtils.hasText(reportedUserId)) {
+                reportedUserId = report.getReportedUserId();
+            }
+            if (!StringUtils.hasText(reportedUserId)) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Cannot ban user: missing reported user id in report");
+            }
+
+            // Ban first so we do not mark the report as banned if ban action fails.
+            banUser(reportedUserId, "Banned due to report: " + report.getReason());
+            report.setReportedId(reportedUserId);
+        }
+
+        report.setStatus(resolvedAction);
         report.setReviewedById(adminId);
         report.setReviewedAt(Instant.now());
         reportRepository.save(report);
 
-        if ("BANNED".equalsIgnoreCase(action)) {
-            banUser(report.getReportedId(), "Banned due to report: " + report.getReason());
-        }
-
-        log.info("Report {} resolved with action: {} by admin: {}", reportId, action, adminId);
+        log.info("Report {} resolved with action: {} by admin: {}", reportId, resolvedAction, adminId);
     }
 
     public void banUser(String userId, String reason) {

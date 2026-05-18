@@ -23,8 +23,18 @@ public class Report {
     @JsonProperty("reporterId")
     private String reporterId;
 
+    @JsonProperty("reporterUsername")
+    private String reporterUsername;
+
     @JsonProperty("reportedId")
     private String reportedId;
+
+    // Backward compatibility for older records saved with a different field name.
+    @JsonProperty("reportedUserId")
+    private String reportedUserId;
+
+    @JsonProperty("reportedUsername")
+    private String reportedUsername;
 
     @JsonProperty("sessionId")
     private String sessionId;

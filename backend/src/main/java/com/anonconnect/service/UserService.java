@@ -36,19 +36,21 @@ public class UserService {
     }
 
     public void reportUser(String reporterId, ReportRequest request) {
-        if (!userRepository.existsById(reporterId)) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Reporter not found");
-        }
-        if (!userRepository.existsById(request.getReportedUserId())) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Reported user not found");
-        }
+        User reporter = userRepository.findById(reporterId)
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Reporter not found"));
+        User reported = userRepository.findById(request.getReportedUserId())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Reported user not found"));
 
         Report report = Report.builder()
                 .reporterId(reporterId)
+                .reporterUsername(reporter.getUsername())
                 .reportedId(request.getReportedUserId())
+                .reportedUserId(request.getReportedUserId())
+                .reportedUsername(reported.getUsername())
                 .sessionId(request.getSessionId())
                 .reason(request.getReason())
                 .description(request.getDescription())
+                .createdAt(Instant.now())
                 .build();
 
         reportRepository.save(report);

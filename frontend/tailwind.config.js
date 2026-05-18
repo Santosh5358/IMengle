@@ -5,58 +5,58 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // ─── Using CSS Custom Properties ────────────────────
+        // ─── Celestial Neon Theme ────────────────────
         surface: {
-          DEFAULT: 'var(--surface)',
-          dim: 'var(--surface-dim)',
-          bright: 'var(--surface-bright)',
-          'container-lowest': 'var(--surface-container-lowest)',
-          'container-low': 'var(--surface-container-low)',
-          'container': 'var(--surface-container)',
-          'container-high': 'var(--surface-container-high)',
-          'container-highest': 'var(--surface-container-highest)',
+          DEFAULT: '#11131d',
+          dim: '#11131d',
+          bright: '#373844',
+          'container-lowest': '#0c0e18',
+          'container-low': '#191b26',
+          'container': '#1d1f2a',
+          'container-high': '#282934',
+          'container-highest': '#32343f',
         },
         'on-surface': {
-          DEFAULT: 'var(--on-surface)',
-          variant: 'var(--on-surface-variant)',
+          DEFAULT: '#e1e1f0',
+          variant: '#cbc3d7',
         },
         primary: {
-          DEFAULT: 'var(--primary)',
-          container: 'var(--primary-container)',
+          DEFAULT: '#d0bcff',
+          container: '#a078ff',
           fixed: '#e9ddff',
           'fixed-dim': '#d0bcff',
         },
         'on-primary': {
-          DEFAULT: 'var(--on-primary)',
-          container: 'var(--on-primary-container)',
+          DEFAULT: '#3c0091',
+          container: '#340080',
           fixed: '#23005c',
           'fixed-variant': '#5516be',
         },
         secondary: {
-          DEFAULT: 'var(--secondary)',
-          container: 'var(--secondary-container)',
+          DEFAULT: '#5de6ff',
+          container: '#00cbe6',
           fixed: '#a2eeff',
           'fixed-dim': '#2fd9f4',
         },
         'on-secondary': {
-          DEFAULT: 'var(--on-secondary)',
-          container: 'var(--on-secondary-container)',
+          DEFAULT: '#00363e',
+          container: '#00515d',
           fixed: '#001f25',
           'fixed-variant': '#004e5a',
         },
         tertiary: {
-          DEFAULT: 'var(--tertiary)',
-          container: 'var(--tertiary-container)',
+          DEFAULT: '#ffafd3',
+          container: '#e364a7',
           fixed: '#ffd8e7',
           'fixed-dim': '#ffafd3',
         },
         error: {
-          DEFAULT: 'var(--error)',
-          container: 'var(--error-container)',
+          DEFAULT: '#ffb4ab',
+          container: '#93000a',
         },
         outline: {
-          DEFAULT: 'var(--outline)',
-          variant: 'var(--outline-variant)',
+          DEFAULT: '#958ea0',
+          variant: '#494454',
         },
         // ─── Neon Accents ────────────────────────────
         neon: {
