@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { ThemeService } from '../../../core/services/theme.service';
 import { SocketService } from '../../../core/services/socket.service';
 
 @Component({
@@ -33,15 +32,6 @@ import { SocketService } from '../../../core/services/socket.service';
 
           <!-- Right: Actions -->
           <div class="flex items-center gap-3">
-            <!-- Theme Toggle -->
-            <button (click)="themeService.toggle()"
-                    class="w-9 h-9 rounded-lg bg-surface-container-high/50 border border-outline-variant/20
-                           flex items-center justify-center hover:bg-surface-container-highest/50 transition-all">
-              <span class="material-symbols-outlined text-on-surface-variant text-lg">
-                {{ themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}
-              </span>
-            </button>
-
             @if (authService.isAuthenticated()) {
               <!-- User Menu -->
               <div class="flex items-center gap-2">
@@ -64,7 +54,6 @@ import { SocketService } from '../../../core/services/socket.service';
 export class HeaderComponent {
   constructor(
     public authService: AuthService,
-    public themeService: ThemeService,
     public socketService: SocketService,
   ) {}
 }

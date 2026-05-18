@@ -3,10 +3,12 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { SocketService, MatchFoundEvent, ChatMessageEvent } from '../../core/services/socket.service';
 import { WebrtcService } from '../../core/services/webrtc.service';
 import { AuthService } from '../../core/services/auth.service';
 import { SearchOverlayComponent } from './search-overlay/search-overlay.component';
+import { environment } from '@env/environment';
 
 interface ChatMsg {
   content: string;
@@ -259,7 +261,7 @@ type RoomState = 'idle' | 'searching' | 'connected';
              [class.inset-0]="showChat()"
              [class.z-40]="showChat()"
              [class.pt-16]="showChat()"
-             [class.md:block]="state() === 'connected'">>
+             [class.md:block]="state() === 'connected'">
 
         <!-- Chat Header -->
         <div class="flex items-center justify-between p-4 border-b border-outline-variant/20">
@@ -356,6 +358,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   showPreferences = signal(false);
   selectedGender = '';
   peerName = signal('Stranger');
+  peerUserId = '';
   private hasStartupPreference = false;
 
   private subs: Subscription[] = [];
@@ -365,6 +368,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   constructor(
     public socketService: SocketService,
     public webrtcService: WebrtcService,
+    private http: HttpClient,
     private authService: AuthService,
     private router: Router,
   ) {}
@@ -417,6 +421,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.clearSearchRelaxTimer();
         this.state.set('connected');
         this.currentSessionId = match.sessionId;
+        this.peerUserId = match.peerId;
         this.peerName.set(match.peerName || 'Stranger');
         this.messages.set([]);
         this.showChat.set(true);
@@ -545,6 +550,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.state.set('idle');
     this.clearSearchRelaxTimer();
     this.peerName.set('Stranger');
+    this.peerUserId = '';
     this.messages.set([]);
     this.isTyping.set(false);
   }
@@ -599,8 +605,27 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   reportPeer(): void {
-    // In production, open a report modal
-    alert('Report submitted. Thank you for helping keep the community safe.');
+    if (!this.peerUserId) {
+      alert('No active peer to report.');
+      return;
+    }
+
+    const reason = prompt('Reason for report:', 'inappropriate_behavior');
+    if (!reason || !reason.trim()) return;
+
+    this.http.post(`${environment.apiUrl}/users/report`, {
+      reportedUserId: this.peerUserId,
+      sessionId: this.currentSessionId || null,
+      reason: reason.trim(),
+      description: '',
+    }).subscribe({
+      next: () => {
+        alert('Report submitted. Thank you for helping keep the community safe.');
+      },
+      error: () => {
+        alert('Failed to submit report. Please try again.');
+      }
+    });
   }
 
   goHome(): void {
