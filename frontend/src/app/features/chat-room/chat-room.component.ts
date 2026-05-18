@@ -133,12 +133,12 @@ type RoomState = 'idle' | 'searching' | 'connected';
         <!-- Videos Grid -->
         <div class="flex-1 relative p-2 md:p-4 min-h-0">
           <!-- Remote Video (full area) -->
-          <div class="relative rounded-2xl overflow-hidden bg-surface-container-lowest w-full h-full">
+          <div class="relative rounded-2xl overflow-hidden bg-surface-container-lowest w-full h-full border border-outline-variant/30 shadow-[0_20px_60px_-30px_rgba(var(--on-surface-rgb),0.35)]">
             <video #remoteVideo autoplay playsinline
                    class="w-full h-full object-cover"></video>
             <!-- Overlay when no peer -->
             @if (state() !== 'connected') {
-              <div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest">
+              <div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest/90 backdrop-blur-sm">
                 <div class="text-center">
                   <span class="material-symbols-outlined text-6xl text-outline-variant/30">person_off</span>
                   <p class="mt-2 text-on-surface-variant text-body-md">
@@ -166,11 +166,11 @@ type RoomState = 'idle' | 'searching' | 'connected';
               </div>
             }
             <!-- Video gradient mask -->
-            <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-container-lowest/80 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-container-lowest/90 to-transparent"></div>
           </div>
 
           <!-- Local Video (PiP overlay) -->
-          <div class="absolute bottom-4 right-4 w-28 h-36 md:w-48 md:h-36 rounded-xl overflow-hidden bg-surface-container-low shadow-lg border border-outline-variant/30 z-10">
+          <div class="absolute bottom-4 right-4 w-28 h-36 md:w-48 md:h-36 rounded-xl overflow-hidden bg-surface-container-low shadow-xl border border-outline-variant/40 z-10 ring-1 ring-white/10">
             <video #localVideo autoplay playsinline muted volume="0"
                    class="w-full h-full object-cover mirror"></video>
             <div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full glass">
@@ -180,7 +180,7 @@ type RoomState = 'idle' | 'searching' | 'connected';
         </div>
 
         <!-- Control Bar -->
-        <div class="flex items-center justify-between md:justify-center gap-1 md:gap-2 p-1.5 md:p-3 bg-surface-container/60 backdrop-blur-md border-t border-outline-variant/20 flex-shrink-0">
+        <div class="flex items-center justify-between md:justify-center gap-1 md:gap-2 p-1.5 md:p-3 bg-surface-container/80 backdrop-blur-md border-t border-outline-variant/30 flex-shrink-0 shadow-[0_-10px_30px_-20px_rgba(var(--on-surface-rgb),0.4)]">
           <!-- Mic Toggle -->
           <button (click)="webrtcService.toggleMute()"
                   class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all"
@@ -252,17 +252,17 @@ type RoomState = 'idle' | 'searching' | 'connected';
       </div>
 
       <!-- Chat Sidebar -->
-      <aside class="md:w-[380px] flex flex-col bg-surface-container/40 backdrop-blur-md border-l border-outline-variant/20
+            <aside class="md:w-[380px] flex flex-col bg-surface-container/70 backdrop-blur-md border-l border-outline-variant/30
                      md:relative md:flex"
              [class.hidden]="!showChat()"
              [class.fixed]="showChat()"
              [class.inset-0]="showChat()"
              [class.z-40]="showChat()"
              [class.pt-16]="showChat()"
-             [class.md:block]="state() === 'connected'">>
+              [class.md:block]="state() === 'connected'">
 
         <!-- Chat Header -->
-        <div class="flex items-center justify-between p-4 border-b border-outline-variant/20">
+        <div class="flex items-center justify-between p-4 border-b border-outline-variant/25 bg-surface-container-high/40">
           <div class="flex items-center gap-3">
             <span class="material-symbols-outlined text-neon-cyan">chat</span>
             <span class="font-display font-semibold text-on-surface">Live Chat</span>
@@ -276,13 +276,13 @@ type RoomState = 'idle' | 'searching' | 'connected';
         </div>
 
         <!-- Messages -->
-        <div #chatContainer class="flex-1 overflow-y-auto p-4 space-y-3">
+        <div #chatContainer class="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-transparent to-surface-container-low/30">
           @for (msg of messages(); track msg.timestamp) {
             <div class="flex" [class.justify-end]="msg.isOwn">
-              <div class="max-w-[80%] p-3 rounded-2xl text-body-md"
+              <div class="max-w-[80%] p-3 rounded-2xl text-body-md shadow-sm border"
                    [class]="msg.isOwn
-                     ? 'bg-neon-cyan/20 text-on-surface rounded-br-md'
-                     : 'bg-surface-container-high text-on-surface rounded-bl-md'">
+                ? 'bg-neon-cyan/20 border-neon-cyan/20 text-on-surface rounded-br-md'
+                : 'bg-surface-container-high border-outline-variant/25 text-on-surface rounded-bl-md'">
                 {{ msg.content }}
                 <div class="text-label-sm text-on-surface-variant/50 mt-1">
                   {{ msg.timestamp | date:'HH:mm' }}
@@ -300,7 +300,7 @@ type RoomState = 'idle' | 'searching' | 'connected';
         </div>
 
         <!-- Chat Input -->
-        <div class="p-4 border-t border-outline-variant/20">
+        <div class="p-4 border-t border-outline-variant/25 bg-surface-container-high/35">
           <div class="flex items-center gap-2">
             <input #chatInput
                    [(ngModel)]="messageText"
@@ -309,7 +309,7 @@ type RoomState = 'idle' | 'searching' | 'connected';
                    [disabled]="state() !== 'connected'"
                    type="text"
                    placeholder="Type a message..."
-                   class="flex-1 px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/30
+                       class="flex-1 px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/40
                           text-on-surface placeholder:text-outline focus:outline-none focus:border-neon-cyan/50
                           transition-all disabled:opacity-50">
             <button (click)="sendMessage()"
@@ -326,7 +326,7 @@ type RoomState = 'idle' | 'searching' | 'connected';
   `,
   styles: [`
     .mirror { transform: scaleX(-1); }
-    video { background-color: #0c0e18; }
+    video { background-color: rgb(var(--surface-container-high-rgb)); }
 
     @media (max-width: 380px) {
       .compact-action-label {
