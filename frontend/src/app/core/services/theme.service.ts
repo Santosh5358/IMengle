@@ -7,16 +7,29 @@ export class ThemeService {
   readonly theme = signal<Theme>(this.loadTheme());
 
   constructor() {
+    // Set initial theme on first load
+    this.applyTheme(this.theme());
+
     effect(() => {
       const t = this.theme();
-      document.documentElement.classList.toggle('dark', t === 'dark');
-      document.documentElement.classList.toggle('light', t === 'light');
+      this.applyTheme(t);
       localStorage.setItem('theme', t);
     });
   }
 
   toggle(): void {
     this.theme.set(this.theme() === 'dark' ? 'light' : 'dark');
+  }
+
+  private applyTheme(theme: Theme): void {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    } else {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    }
   }
 
   private loadTheme(): Theme {
