@@ -1,6 +1,7 @@
 package com.anonconnect.controller;
 
 import com.anonconnect.dto.ApiResponse;
+import com.anonconnect.dto.DirectCallConfigResponse;
 import com.anonconnect.dto.ReportRequest;
 import com.anonconnect.service.UserService;
 import jakarta.validation.Valid;
@@ -22,6 +23,12 @@ public class UserController {
     public ResponseEntity<ApiResponse<Map<String, Long>>> getOnlineCount() {
         long count = userService.getOnlineUserCount();
         return ResponseEntity.ok(ApiResponse.ok(Map.of("online", count)));
+    }
+
+    @GetMapping("/direct-call/config")
+    public ResponseEntity<ApiResponse<DirectCallConfigResponse>> getDirectCallConfig(Authentication auth) {
+        String userId = auth.getName();
+        return ResponseEntity.ok(ApiResponse.ok(userService.getDirectCallConfig(userId)));
     }
 
     @PostMapping("/report")

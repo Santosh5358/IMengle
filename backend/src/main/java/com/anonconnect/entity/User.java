@@ -8,6 +8,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Document(collection = "users")
@@ -46,6 +48,14 @@ public class User {
     @JsonProperty("isBanned")
     @Builder.Default
     private Boolean isBanned = false;
+
+    @JsonProperty("directCallEnabled")
+    @Builder.Default
+    private Boolean directCallEnabled = false;
+
+    @JsonProperty("directCallAllowedUserIds")
+    @Builder.Default
+    private List<String> directCallAllowedUserIds = new ArrayList<>();
 
     @JsonProperty("banReason")
     private String banReason;

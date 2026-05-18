@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { SocketService, MatchFoundEvent, ChatMessageEvent } from '../../core/services/socket.service';
+import { SocketService, MatchFoundEvent, ChatMessageEvent, IncomingCallEvent } from '../../core/services/socket.service';
 import { WebrtcService } from '../../core/services/webrtc.service';
 import { AuthService } from '../../core/services/auth.service';
 import { SearchOverlayComponent } from './search-overlay/search-overlay.component';
@@ -18,6 +18,11 @@ interface ChatMsg {
 }
 
 type RoomState = 'idle' | 'searching' | 'connected';
+
+interface DirectCallConfig {
+  enabled: boolean;
+  allowedUsernames: string[];
+}
 
 @Component({
   selector: 'app-chat-room',
@@ -130,8 +135,53 @@ type RoomState = 'idle' | 'searching' | 'connected';
         </div>
       }
 
+      @if (incomingCall()) {
+        <div class="absolute inset-0 z-40 flex items-center justify-center bg-black/65 backdrop-blur-sm mt-16">
+          <div class="glass p-6 w-full max-w-md mx-4 text-center">
+            <h3 class="font-display font-bold text-headline-sm text-on-surface mb-2">Incoming Call</h3>
+            <p class="text-on-surface-variant mb-6">
+              {{ incomingCall()?.fromUsername }} is calling you.
+            </p>
+            <div class="flex items-center justify-center gap-3">
+              <button (click)="rejectIncomingCall()"
+                      class="px-5 py-2.5 rounded-xl bg-error/15 text-error border border-error/30 hover:bg-error/25 transition-all">
+                Reject
+              </button>
+              <button (click)="acceptIncomingCall()"
+                      class="px-5 py-2.5 rounded-xl bg-green-400/15 text-green-400 border border-green-400/30 hover:bg-green-400/25 transition-all">
+                Accept
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
       <!-- Main Video Area -->
       <div class="flex-1 flex flex-col relative min-h-0">
+        @if (directCallConfig().enabled) {
+          <div class="px-2 md:px-4 pt-2 md:pt-3">
+            <div class="glass p-3 flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+              <div class="text-label-sm text-on-surface-variant md:min-w-[180px]">
+                Direct Call Access Enabled
+              </div>
+              <input
+                [(ngModel)]="directCallTarget"
+                [disabled]="state() !== 'idle'"
+                placeholder="Enter username to call"
+                class="flex-1 px-3 py-2 rounded-lg bg-surface-container-low border border-outline-variant/30 text-on-surface placeholder:text-outline focus:outline-none focus:border-neon-cyan/50 disabled:opacity-50" />
+              <button
+                (click)="placeDirectCall()"
+                [disabled]="state() !== 'idle' || !directCallTarget.trim()"
+                class="px-4 py-2 rounded-lg bg-neon-cyan/20 border border-neon-cyan/30 text-neon-cyan hover:bg-neon-cyan/30 transition-all disabled:opacity-40">
+                Call
+              </button>
+            </div>
+            @if (outgoingCallStatus()) {
+              <div class="text-label-sm text-on-surface-variant mt-1 px-1">{{ outgoingCallStatus() }}</div>
+            }
+          </div>
+        }
+
         <!-- Videos Grid -->
         <div class="flex-1 relative p-2 md:p-4 min-h-0">
           <!-- Remote Video (full area) -->
@@ -359,11 +409,17 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   selectedGender = '';
   peerName = signal('Stranger');
   peerUserId = '';
+  directCallConfig = signal<DirectCallConfig>({ enabled: false, allowedUsernames: [] });
+  directCallTarget = '';
+  outgoingCallStatus = signal('');
+  incomingCall = signal<IncomingCallEvent | null>(null);
   private hasStartupPreference = false;
 
   private subs: Subscription[] = [];
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private searchRelaxTimer: ReturnType<typeof setTimeout> | null = null;
+  private ringtoneAudioContext: AudioContext | null = null;
+  private ringtoneTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     public socketService: SocketService,
@@ -382,6 +438,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     // Ensure socket connected
     this.socketService.connect();
+    this.loadDirectCallConfig();
 
     // Start local video
     try {
@@ -418,6 +475,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     // Match found
     this.subs.push(
       this.socketService.matchFound$.subscribe(async (match) => {
+        this.stopRingtone();
+        this.incomingCall.set(null);
+        this.outgoingCallStatus.set('');
         this.clearSearchRelaxTimer();
         this.state.set('connected');
         this.currentSessionId = match.sessionId;
@@ -483,6 +543,35 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.startSearchRelaxTimer();
       })
     );
+
+    this.subs.push(
+      this.socketService.incomingCall$.subscribe((call) => {
+        if (!this.directCallConfig().enabled) {
+          this.socketService.rejectCall(call.callId);
+          return;
+        }
+        this.incomingCall.set(call);
+        this.startRingtone();
+      })
+    );
+
+    this.subs.push(
+      this.socketService.callRinging$.subscribe((data) => {
+        this.outgoingCallStatus.set(`Calling ${data.toUsername}...`);
+      })
+    );
+
+    this.subs.push(
+      this.socketService.callRejected$.subscribe((data) => {
+        this.outgoingCallStatus.set(data.byUsername ? `${data.byUsername} rejected the call` : 'Call was rejected');
+      })
+    );
+
+    this.subs.push(
+      this.socketService.directCallFailed$.subscribe((data) => {
+        this.outgoingCallStatus.set(data.message || 'Direct call failed');
+      })
+    );
   }
 
   ngAfterViewChecked(): void {
@@ -491,6 +580,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
+    this.stopRingtone();
     this.webrtcService.fullCleanup();
     this.socketService.endSession();
     if (this.typingTimeout) clearTimeout(this.typingTimeout);
@@ -555,6 +645,40 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isTyping.set(false);
   }
 
+  placeDirectCall(): void {
+    const target = this.directCallTarget.trim();
+    if (!target) return;
+    if (!this.directCallConfig().enabled) {
+      this.outgoingCallStatus.set('Direct call is not enabled for your account');
+      return;
+    }
+    if (this.state() !== 'idle') {
+      this.outgoingCallStatus.set('End the current call/search before placing a direct call');
+      return;
+    }
+
+    this.outgoingCallStatus.set('Calling...');
+    this.socketService.directCall(target);
+  }
+
+  acceptIncomingCall(): void {
+    const call = this.incomingCall();
+    if (!call) return;
+    this.stopRingtone();
+    this.incomingCall.set(null);
+    this.outgoingCallStatus.set('Connecting...');
+    this.state.set('searching');
+    this.socketService.acceptCall(call.callId);
+  }
+
+  rejectIncomingCall(): void {
+    const call = this.incomingCall();
+    if (!call) return;
+    this.stopRingtone();
+    this.incomingCall.set(null);
+    this.socketService.rejectCall(call.callId);
+  }
+
   private startSearchRelaxTimer(): void {
     this.clearSearchRelaxTimer();
 
@@ -575,6 +699,64 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.searchRelaxTimer) {
       clearTimeout(this.searchRelaxTimer);
       this.searchRelaxTimer = null;
+    }
+  }
+
+  private loadDirectCallConfig(): void {
+    this.http.get<{ data: DirectCallConfig }>(`${environment.apiUrl}/users/direct-call/config`).subscribe({
+      next: (res) => {
+        this.directCallConfig.set({
+          enabled: !!res.data?.enabled,
+          allowedUsernames: res.data?.allowedUsernames || [],
+        });
+      },
+      error: () => {
+        this.directCallConfig.set({ enabled: false, allowedUsernames: [] });
+      }
+    });
+  }
+
+  private ringPulse(): void {
+    try {
+      const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+
+      if (!this.ringtoneAudioContext || this.ringtoneAudioContext.state === 'closed') {
+        this.ringtoneAudioContext = new AudioCtx();
+      }
+
+      const ctx = this.ringtoneAudioContext as AudioContext;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.value = 0.0001;
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      const now = ctx.currentTime;
+      gain.gain.exponentialRampToValueAtTime(0.15, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+
+      osc.start(now);
+      osc.stop(now + 0.36);
+    } catch {
+      // Ignore ringing issues on browsers that block autoplay audio contexts.
+    }
+  }
+
+  private startRingtone(): void {
+    this.stopRingtone();
+    this.ringPulse();
+    this.ringtoneTimer = setInterval(() => this.ringPulse(), 900);
+  }
+
+  private stopRingtone(): void {
+    if (this.ringtoneTimer) {
+      clearInterval(this.ringtoneTimer);
+      this.ringtoneTimer = null;
     }
   }
 

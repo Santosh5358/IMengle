@@ -45,6 +45,13 @@ interface ReportDTO {
   createdAt: string;
 }
 
+interface DirectCallAccessDTO {
+  userId: string;
+  username: string;
+  enabled: boolean;
+  allowedUsernames: string[];
+}
+
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -264,6 +271,61 @@ interface ReportDTO {
                 <li>• Monitor pending reports</li>
               </ul>
             </div>
+
+            <div class="glass p-6 lg:col-span-2">
+              <h3 class="font-display font-semibold text-lg text-on-surface mb-2">Direct Call Access Management</h3>
+              <p class="text-on-surface-variant text-body-md mb-4">
+                Grant direct call feature to selected users and define whom they can call.
+              </p>
+
+              <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 mb-6">
+                <div>
+                  <label class="block text-label-sm text-on-surface-variant mb-1">Username</label>
+                  <input #directCallUsername
+                         type="text"
+                         placeholder="e.g. santosh"
+                         class="w-full px-3 py-2 rounded-lg bg-surface-container-low border border-outline-variant/30 text-on-surface focus:outline-none focus:border-neon-cyan/50" />
+                </div>
+
+                <div class="flex items-end">
+                  <label class="inline-flex items-center gap-2 text-on-surface-variant">
+                    <input #directCallEnabled
+                           type="checkbox"
+                           class="w-4 h-4 accent-cyan-400" />
+                    Enable
+                  </label>
+                </div>
+
+                <div class="md:col-span-2">
+                  <label class="block text-label-sm text-on-surface-variant mb-1">Allowed Usernames (comma-separated)</label>
+                  <input #allowedUsernames
+                         type="text"
+                         placeholder="e.g. Ashish, user2"
+                         class="w-full px-3 py-2 rounded-lg bg-surface-container-low border border-outline-variant/30 text-on-surface focus:outline-none focus:border-neon-cyan/50" />
+                </div>
+
+                <div class="md:col-span-2">
+                  <button (click)="saveDirectCallAccess(directCallUsername.value, directCallEnabled.checked, allowedUsernames.value)"
+                          class="px-4 py-2 rounded-lg bg-neon-cyan/20 border border-neon-cyan/30 text-neon-cyan hover:bg-neon-cyan/30 transition-all">
+                    Save Direct Call Access
+                  </button>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                @for (entry of directCallAccessList(); track entry.userId) {
+                  <div class="rounded-lg border border-outline-variant/20 p-3 bg-surface-container-low/40">
+                    <div class="text-on-surface font-display">{{ entry.username }}</div>
+                    <div class="text-label-sm text-on-surface-variant">
+                      Enabled: {{ entry.enabled ? 'Yes' : 'No' }}
+                    </div>
+                    <div class="text-label-sm text-on-surface-variant">
+                      Allowed: {{ entry.allowedUsernames.length ? entry.allowedUsernames.join(', ') : 'None' }}
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
           </div>
         }
       </main>
@@ -275,6 +337,7 @@ export class AdminComponent implements OnInit {
   stats = signal<DashboardStats | null>(null);
   users = signal<UserDTO[]>([]);
   reports = signal<ReportDTO[]>([]);
+  directCallAccessList = signal<DirectCallAccessDTO[]>([]);
 
   navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
@@ -291,6 +354,7 @@ export class AdminComponent implements OnInit {
     this.loadDashboard();
     this.loadUsers();
     this.loadReports();
+    this.loadDirectCallAccess();
   }
 
   loadDashboard(): void {
@@ -353,6 +417,42 @@ export class AdminComponent implements OnInit {
     this.http.post(`${environment.apiUrl}/admin/unban/${userId}`, {}).subscribe(() => {
       this.loadUsers();
       this.loadDashboard();
+    });
+  }
+
+  loadDirectCallAccess(): void {
+    this.http.get<{ data: DirectCallAccessDTO[] }>(`${environment.apiUrl}/admin/direct-call/access`).subscribe({
+      next: (res) => this.directCallAccessList.set(res.data || []),
+      error: () => this.directCallAccessList.set([]),
+    });
+  }
+
+  saveDirectCallAccess(username: string, enabled: boolean, allowedRaw: string): void {
+    const normalizedUsername = (username || '').trim();
+    if (!normalizedUsername) {
+      alert('Please enter a username.');
+      return;
+    }
+
+    const allowedUsernames = (allowedRaw || '')
+      .split(',')
+      .map(v => v.trim())
+      .filter(Boolean);
+
+    this.http.post(`${environment.apiUrl}/admin/direct-call/access`, {
+      username: normalizedUsername,
+      enabled,
+      allowedUsernames,
+    }).subscribe({
+      next: () => {
+        this.loadDirectCallAccess();
+        this.loadUsers();
+        alert('Direct call access updated.');
+      },
+      error: (err) => {
+        const message = err?.error?.message || 'Failed to update direct call access.';
+        alert(message);
+      },
     });
   }
 }

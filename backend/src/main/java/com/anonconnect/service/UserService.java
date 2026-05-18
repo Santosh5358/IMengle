@@ -1,6 +1,7 @@
 package com.anonconnect.service;
 
 import com.anonconnect.dto.ReportRequest;
+import com.anonconnect.dto.DirectCallConfigResponse;
 import com.anonconnect.entity.*;
 import com.anonconnect.exception.AppException;
 import com.anonconnect.repository.*;
@@ -26,6 +27,34 @@ public class UserService {
 
     public long getOnlineUserCount() {
         return activeConnectionRepository.count();
+    }
+
+    public DirectCallConfigResponse getDirectCallConfig(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not found"));
+
+        List<String> allowedIds = user.getDirectCallAllowedUserIds() == null ? List.of() : user.getDirectCallAllowedUserIds();
+        List<String> allowedUsernames = allowedIds.stream()
+                .map(id -> userRepository.findById(id).map(User::getUsername).orElse(null))
+                .filter(name -> name != null && !name.isBlank())
+                .collect(Collectors.toList());
+
+        return DirectCallConfigResponse.builder()
+                .enabled(Boolean.TRUE.equals(user.getDirectCallEnabled()))
+                .allowedUsernames(allowedUsernames)
+                .build();
+    }
+
+    public boolean canDirectCall(User caller, User callee) {
+        if (caller == null || callee == null) return false;
+        if (!Boolean.TRUE.equals(caller.getDirectCallEnabled()) || !Boolean.TRUE.equals(callee.getDirectCallEnabled())) {
+            return false;
+        }
+
+        List<String> callerAllowed = caller.getDirectCallAllowedUserIds() == null ? List.of() : caller.getDirectCallAllowedUserIds();
+        List<String> calleeAllowed = callee.getDirectCallAllowedUserIds() == null ? List.of() : callee.getDirectCallAllowedUserIds();
+
+        return callerAllowed.contains(callee.getId()) && calleeAllowed.contains(caller.getId());
     }
 
     public void updateLastActive(String userId) {

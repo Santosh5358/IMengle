@@ -18,6 +18,12 @@ export interface ChatMessageEvent {
   timestamp: string;
 }
 
+export interface IncomingCallEvent {
+  callId: string;
+  fromUserId: string;
+  fromUsername: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket: Socket | null = null;
@@ -34,6 +40,11 @@ export class SocketService {
   readonly stopTyping$ = new Subject<string>();
   readonly searching$ = new Subject<void>();
   readonly queueJoined$ = new Subject<{ position: number }>();
+  readonly incomingCall$ = new Subject<IncomingCallEvent>();
+  readonly callRinging$ = new Subject<{ callId: string; toUsername: string }>();
+  readonly callAccepted$ = new Subject<{ callId: string }>();
+  readonly callRejected$ = new Subject<{ callId: string; byUsername?: string; reason?: string }>();
+  readonly directCallFailed$ = new Subject<{ message: string }>();
 
   // WebRTC signaling subjects
   readonly offer$ = new Subject<{ sdp: RTCSessionDescriptionInit; fromSocketId: string }>();
@@ -48,7 +59,9 @@ export class SocketService {
     const user = this.authService.currentUser();
     if (!user) return;
 
-    this.socket = io(environment.socketUrl, {
+    const resolvedSocketUrl = this.resolveSocketUrl(environment.socketUrl);
+
+    this.socket = io(resolvedSocketUrl, {
       path: '/socket.io',
       query: { userId: user.userId },
       transports: ['websocket', 'polling'],
@@ -101,6 +114,26 @@ export class SocketService {
       this.queueJoined$.next(data);
     });
 
+    this.socket.on('incoming-call', (data: IncomingCallEvent) => {
+      this.incomingCall$.next(data);
+    });
+
+    this.socket.on('call-ringing', (data: { callId: string; toUsername: string }) => {
+      this.callRinging$.next(data);
+    });
+
+    this.socket.on('call-accepted', (data: { callId: string }) => {
+      this.callAccepted$.next(data);
+    });
+
+    this.socket.on('call-rejected', (data: { callId: string; byUsername?: string; reason?: string }) => {
+      this.callRejected$.next(data || { callId: '' });
+    });
+
+    this.socket.on('direct-call-failed', (data: { message: string }) => {
+      this.directCallFailed$.next(data || { message: 'Direct call failed' });
+    });
+
     // WebRTC signaling
     this.socket.on('offer', (data: { sdp: RTCSessionDescriptionInit; fromSocketId: string }) => {
       this.offer$.next(data);
@@ -149,6 +182,18 @@ export class SocketService {
     this.socket?.emit('end-session');
   }
 
+  directCall(targetUsername: string): void {
+    this.socket?.emit('direct-call', { targetUsername });
+  }
+
+  acceptCall(callId: string): void {
+    this.socket?.emit('accept-call', { callId });
+  }
+
+  rejectCall(callId: string): void {
+    this.socket?.emit('reject-call', { callId });
+  }
+
   // WebRTC signaling
   sendOffer(targetSocketId: string, sdp: RTCSessionDescriptionInit): void {
     this.socket?.emit('offer', { targetSocketId, sdp });
@@ -160,5 +205,18 @@ export class SocketService {
 
   sendIceCandidate(targetSocketId: string, candidate: RTCIceCandidateInit): void {
     this.socket?.emit('ice-candidate', { targetSocketId, candidate });
+  }
+
+  private resolveSocketUrl(url: string): string {
+    if (typeof window === 'undefined') {
+      return url;
+    }
+
+    // For LAN testing, replace localhost with the host used to open the frontend.
+    if (url.includes('localhost')) {
+      return url.replace('localhost', window.location.hostname);
+    }
+
+    return url;
   }
 }

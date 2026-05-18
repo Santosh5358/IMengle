@@ -1,6 +1,8 @@
 package com.anonconnect.service;
 
 import com.anonconnect.dto.DashboardStats;
+import com.anonconnect.dto.DirectCallAccessDTO;
+import com.anonconnect.dto.DirectCallAccessRequest;
 import com.anonconnect.dto.UserDTO;
 import com.anonconnect.entity.Report;
 import com.anonconnect.entity.User;
@@ -16,6 +18,9 @@ import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -101,6 +106,45 @@ public class AdminService {
         return userRepository.findAll(pageable).map(this::toDTO);
     }
 
+    public List<DirectCallAccessDTO> getDirectCallAccessList() {
+        return userRepository.findAll().stream()
+                .map(this::toDirectCallAccessDTO)
+                .collect(Collectors.toList());
+    }
+
+    public DirectCallAccessDTO updateDirectCallAccess(DirectCallAccessRequest request) {
+        if (request == null || !StringUtils.hasText(request.getUsername())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Username is required");
+        }
+
+        User user = userRepository.findByUsername(request.getUsername().trim())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not found"));
+
+        boolean enabled = Boolean.TRUE.equals(request.getEnabled());
+        user.setDirectCallEnabled(enabled);
+
+        List<String> allowedIds = new ArrayList<>();
+        if (enabled && request.getAllowedUsernames() != null) {
+            for (String rawUsername : request.getAllowedUsernames()) {
+                if (!StringUtils.hasText(rawUsername)) {
+                    continue;
+                }
+
+                String normalized = rawUsername.trim();
+                User allowedUser = userRepository.findByUsername(normalized)
+                        .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Allowed user not found: " + normalized));
+
+                if (!allowedUser.getId().equals(user.getId())) {
+                    allowedIds.add(allowedUser.getId());
+                }
+            }
+        }
+
+        user.setDirectCallAllowedUserIds(allowedIds);
+        userRepository.save(user);
+        return toDirectCallAccessDTO(user);
+    }
+
     private UserDTO toDTO(User user) {
         return UserDTO.builder()
                 .id(user.getId())
@@ -109,8 +153,26 @@ public class AdminService {
                 .gender(user.getGender())
                 .role(user.getRole())
                 .isBanned(user.getIsBanned())
+                .directCallEnabled(Boolean.TRUE.equals(user.getDirectCallEnabled()))
+                .directCallAllowedUserIds(user.getDirectCallAllowedUserIds() == null ? List.of() : user.getDirectCallAllowedUserIds())
                 .lastActive(user.getLastActive())
                 .createdAt(user.getCreatedAt())
+                .build();
+    }
+
+    private DirectCallAccessDTO toDirectCallAccessDTO(User user) {
+        List<String> allowedUsernames = new ArrayList<>();
+        List<String> allowedIds = user.getDirectCallAllowedUserIds() == null ? List.of() : user.getDirectCallAllowedUserIds();
+
+        for (String id : allowedIds) {
+            userRepository.findById(id).ifPresent(allowed -> allowedUsernames.add(allowed.getUsername()));
+        }
+
+        return DirectCallAccessDTO.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .enabled(Boolean.TRUE.equals(user.getDirectCallEnabled()))
+                .allowedUsernames(allowedUsernames)
                 .build();
     }
 }

@@ -2,10 +2,12 @@ package com.anonconnect.signaling;
 
 import com.anonconnect.dto.MatchPreferences;
 import com.anonconnect.entity.ActiveConnection;
+import com.anonconnect.entity.User;
 import com.anonconnect.repository.ActiveConnectionRepository;
 import com.anonconnect.repository.UserRepository;
 import com.anonconnect.service.ChatService;
 import com.anonconnect.service.MatchmakingService;
+import com.anonconnect.service.UserService;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
@@ -31,6 +33,7 @@ public class SignalingHandler {
     private final SocketIOServer server;
     private final MatchmakingService matchmakingService;
     private final ChatService chatService;
+    private final UserService userService;
     private final ActiveConnectionRepository activeConnectionRepository;
     private final UserRepository userRepository;
 
@@ -40,6 +43,8 @@ public class SignalingHandler {
     private final Map<String, String> userSessionMap = new ConcurrentHashMap<>();
     // Socket -> userId mapping
     private final Map<UUID, String> socketUserMap = new ConcurrentHashMap<>();
+    // Pending direct calls: callId -> call state
+    private final Map<String, PendingDirectCall> pendingDirectCalls = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void start() {
@@ -49,6 +54,11 @@ public class SignalingHandler {
         // Matchmaking events
         server.addEventListener("join-queue", Map.class, onJoinQueue());
         server.addEventListener("leave-queue", String.class, onLeaveQueue());
+
+        // Direct call events
+        server.addEventListener("direct-call", Map.class, onDirectCall());
+        server.addEventListener("accept-call", Map.class, onAcceptCall());
+        server.addEventListener("reject-call", Map.class, onRejectCall());
 
         // WebRTC signaling events
         server.addEventListener("offer", Map.class, onOffer());
@@ -104,6 +114,7 @@ public class SignalingHandler {
             if (userId != null) {
                 matchmakingService.removeFromQueue(userId);
                 handleUserDisconnect(userId);
+                clearPendingCallsForUser(userId);
                 activeConnectionRepository.deleteBySocketId(client.getSessionId().toString());
             }
             broadcastOnlineCount();
@@ -138,6 +149,137 @@ public class SignalingHandler {
             if (userId != null) {
                 matchmakingService.removeFromQueue(userId);
                 client.sendEvent("queue-left");
+            }
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    private DataListener<Map> onDirectCall() {
+        return (client, data, ackRequest) -> {
+            String callerId = socketUserMap.get(client.getSessionId());
+            if (callerId == null) return;
+
+            String targetUsername = data == null ? null : (String) data.get("targetUsername");
+            if (targetUsername == null || targetUsername.isBlank()) {
+                client.sendEvent("direct-call-failed", Map.of("message", "Target username is required"));
+                return;
+            }
+
+            Optional<User> callerOpt = userRepository.findById(callerId);
+            Optional<User> calleeOpt = userRepository.findByUsername(targetUsername.trim());
+            if (callerOpt.isEmpty() || calleeOpt.isEmpty()) {
+                client.sendEvent("direct-call-failed", Map.of("message", "Target user not found"));
+                return;
+            }
+
+            User caller = callerOpt.get();
+            User callee = calleeOpt.get();
+
+            if (caller.getId().equals(callee.getId())) {
+                client.sendEvent("direct-call-failed", Map.of("message", "You cannot call yourself"));
+                return;
+            }
+
+            if (!userService.canDirectCall(caller, callee)) {
+                client.sendEvent("direct-call-failed", Map.of("message", "Direct call is not enabled for this pair"));
+                return;
+            }
+
+            if (userSessionMap.containsKey(caller.getId()) || userSessionMap.containsKey(callee.getId())) {
+                client.sendEvent("direct-call-failed", Map.of("message", "One of the users is already in a call"));
+                return;
+            }
+
+            SocketIOClient calleeClient = findClientByUserId(callee.getId());
+            if (calleeClient == null) {
+                client.sendEvent("direct-call-failed", Map.of("message", "Target user is offline"));
+                return;
+            }
+
+            String callId = UUID.randomUUID().toString();
+            PendingDirectCall pending = new PendingDirectCall(
+                    callId,
+                    caller.getId(),
+                    caller.getUsername(),
+                    client.getSessionId().toString(),
+                    callee.getId(),
+                    callee.getUsername(),
+                    calleeClient.getSessionId().toString()
+            );
+            pendingDirectCalls.put(callId, pending);
+
+            calleeClient.sendEvent("incoming-call", Map.of(
+                    "callId", callId,
+                    "fromUserId", caller.getId(),
+                    "fromUsername", caller.getUsername()
+            ));
+
+            client.sendEvent("call-ringing", Map.of(
+                    "callId", callId,
+                    "toUsername", callee.getUsername()
+            ));
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    private DataListener<Map> onAcceptCall() {
+        return (client, data, ackRequest) -> {
+            String calleeId = socketUserMap.get(client.getSessionId());
+            if (calleeId == null) return;
+
+            String callId = data == null ? null : (String) data.get("callId");
+            if (callId == null || callId.isBlank()) return;
+
+            PendingDirectCall pending = pendingDirectCalls.remove(callId);
+            if (pending == null || !pending.calleeId().equals(calleeId)) {
+                return;
+            }
+
+            SocketIOClient callerClient = getClientBySocketId(pending.callerSocketId());
+            SocketIOClient calleeClient = getClientBySocketId(pending.calleeSocketId());
+            if (callerClient == null || calleeClient == null) {
+                if (callerClient != null) {
+                    callerClient.sendEvent("call-rejected", Map.of("callId", callId, "reason", "User unavailable"));
+                }
+                return;
+            }
+
+            if (userSessionMap.containsKey(pending.callerId()) || userSessionMap.containsKey(pending.calleeId())) {
+                callerClient.sendEvent("direct-call-failed", Map.of("message", "One of the users is already in a call"));
+                return;
+            }
+
+            matchmakingService.removeFromQueue(pending.callerId());
+            matchmakingService.removeFromQueue(pending.calleeId());
+
+            callerClient.sendEvent("call-accepted", Map.of("callId", callId));
+            initiateMatch(new String[]{
+                    pending.callerId(), pending.callerSocketId(),
+                    pending.calleeId(), pending.calleeSocketId()
+            });
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    private DataListener<Map> onRejectCall() {
+        return (client, data, ackRequest) -> {
+            String calleeId = socketUserMap.get(client.getSessionId());
+            if (calleeId == null) return;
+
+            String callId = data == null ? null : (String) data.get("callId");
+            if (callId == null || callId.isBlank()) return;
+
+            PendingDirectCall pending = pendingDirectCalls.remove(callId);
+            if (pending == null || !pending.calleeId().equals(calleeId)) {
+                return;
+            }
+
+            SocketIOClient callerClient = getClientBySocketId(pending.callerSocketId());
+            if (callerClient != null) {
+                callerClient.sendEvent("call-rejected", Map.of(
+                        "callId", callId,
+                        "byUsername", pending.calleeUsername()
+                ));
             }
         };
     }
@@ -349,6 +491,14 @@ public class SignalingHandler {
         return null;
     }
 
+    private SocketIOClient getClientBySocketId(String socketId) {
+        try {
+            return server.getClient(UUID.fromString(socketId));
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
+
     private void forwardToPeer(SocketIOClient client, String event, Map<String, Object> data) {
         String userId = socketUserMap.get(client.getSessionId());
         if (userId == null) return;
@@ -370,4 +520,33 @@ public class SignalingHandler {
         int count = socketUserMap.size();
         server.getBroadcastOperations().sendEvent("online-count", Map.of("count", count));
     }
+
+    private void clearPendingCallsForUser(String userId) {
+        pendingDirectCalls.entrySet().removeIf(entry -> {
+            PendingDirectCall call = entry.getValue();
+            if (!call.callerId().equals(userId) && !call.calleeId().equals(userId)) {
+                return false;
+            }
+
+            String otherSocketId = call.callerId().equals(userId) ? call.calleeSocketId() : call.callerSocketId();
+            SocketIOClient otherClient = getClientBySocketId(otherSocketId);
+            if (otherClient != null) {
+                otherClient.sendEvent("call-rejected", Map.of(
+                        "callId", call.callId(),
+                        "reason", "User unavailable"
+                ));
+            }
+            return true;
+        });
+    }
+
+    private record PendingDirectCall(
+            String callId,
+            String callerId,
+            String callerUsername,
+            String callerSocketId,
+            String calleeId,
+            String calleeUsername,
+            String calleeSocketId
+    ) {}
 }

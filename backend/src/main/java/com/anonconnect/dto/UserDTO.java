@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data @Builder @AllArgsConstructor
 public class UserDTO {
@@ -15,6 +16,8 @@ public class UserDTO {
     private String avatarUrl;
     private String role;
     private Boolean isBanned;
+    private Boolean directCallEnabled;
+    private List<String> directCallAllowedUserIds;
     private Instant lastActive;
     private Instant createdAt;
 }

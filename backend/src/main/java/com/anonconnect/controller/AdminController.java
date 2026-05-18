@@ -2,6 +2,8 @@ package com.anonconnect.controller;
 
 import com.anonconnect.dto.ApiResponse;
 import com.anonconnect.dto.DashboardStats;
+import com.anonconnect.dto.DirectCallAccessDTO;
+import com.anonconnect.dto.DirectCallAccessRequest;
 import com.anonconnect.dto.UserDTO;
 import com.anonconnect.entity.Report;
 import com.anonconnect.service.AdminService;
@@ -13,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -57,5 +61,15 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<Page<UserDTO>>> getUsers(@PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.ok(adminService.getAllUsers(pageable)));
+    }
+
+    @GetMapping("/direct-call/access")
+    public ResponseEntity<ApiResponse<List<DirectCallAccessDTO>>> getDirectCallAccess() {
+        return ResponseEntity.ok(ApiResponse.ok(adminService.getDirectCallAccessList()));
+    }
+
+    @PostMapping("/direct-call/access")
+    public ResponseEntity<ApiResponse<DirectCallAccessDTO>> updateDirectCallAccess(@RequestBody DirectCallAccessRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok("Direct call access updated", adminService.updateDirectCallAccess(request)));
     }
 }
