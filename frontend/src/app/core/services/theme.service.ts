@@ -7,9 +7,11 @@ export class ThemeService {
   readonly theme = signal<Theme>(this.loadTheme());
 
   constructor() {
-    // Set initial theme on first load
-    this.applyTheme(this.theme());
+    // Apply theme immediately, synchronously, before Angular renders
+    const initialTheme = this.loadTheme();
+    this.applyTheme(initialTheme);
 
+    // Then set up the reactive effect for future changes
     effect(() => {
       const t = this.theme();
       this.applyTheme(t);
@@ -18,21 +20,24 @@ export class ThemeService {
   }
 
   toggle(): void {
-    this.theme.set(this.theme() === 'dark' ? 'light' : 'dark');
+    const newTheme = this.theme() === 'dark' ? 'light' : 'dark';
+    this.theme.set(newTheme);
   }
 
   private applyTheme(theme: Theme): void {
     const root = document.documentElement;
+    // Force a synchronous update
     if (theme === 'dark') {
       root.classList.add('dark');
       root.classList.remove('light');
     } else {
-      root.classList.remove('dark');
       root.classList.add('light');
+      root.classList.remove('dark');
     }
   }
 
   private loadTheme(): Theme {
-    return (localStorage.getItem('theme') as Theme) || 'dark';
+    const stored = localStorage.getItem('theme') as Theme | null;
+    return stored || 'dark';
   }
 }

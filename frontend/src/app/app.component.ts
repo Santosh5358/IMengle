@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/components/header/header.component';
+import { ThemeService } from './core/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -15,4 +16,9 @@ import { HeaderComponent } from './shared/components/header/header.component';
     </div>
   `,
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor() {
+    // Inject ThemeService to ensure it's initialized and sets up the theme on app startup
+    inject(ThemeService);
+  }
+}
