@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, signal, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -27,9 +27,83 @@ interface DirectCallConfig {
 @Component({
   selector: 'app-chat-room',
   standalone: true,
-  imports: [FormsModule, DatePipe, SearchOverlayComponent],
+  imports: [CommonModule, FormsModule, DatePipe, SearchOverlayComponent],
   template: `
     <div class="h-[100dvh] pt-16 flex flex-col md:flex-row bg-surface overflow-hidden">
+
+      <!-- Direct Call Sidebar (separate panel) -->
+      @if (directCallConfig().enabled && showDirectCallPanel()) {
+        <aside class="w-full md:w-72 flex-shrink-0 flex flex-col bg-surface-container/60 backdrop-blur-md border-r border-outline-variant/20 overflow-hidden">
+          <!-- Header -->
+          <div class="flex items-center justify-between px-4 py-3 border-b border-outline-variant/20">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-neon-cyan text-xl">contacts</span>
+              <span class="font-display font-semibold text-on-surface text-sm">Direct Call</span>
+            </div>
+            <button (click)="showDirectCallPanel.set(false)"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition">
+              <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+          </div>
+
+          <!-- Search -->
+          <div class="p-3">
+            <div class="flex items-center gap-2 bg-surface-container-low rounded-xl px-3 py-2.5 border border-outline-variant/20">
+              <span class="material-symbols-outlined text-on-surface-variant text-lg">search</span>
+              <input
+                [(ngModel)]="userSearch"
+                placeholder="Search or type username..."
+                class="flex-1 min-w-0 bg-transparent text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none" />
+            </div>
+          </div>
+
+          <!-- Contact List -->
+          <div class="flex-1 overflow-y-auto px-3 pb-3 space-y-1">
+            @if (filteredContacts().length > 0) {
+              @for (contact of filteredContacts(); track contact) {
+                <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition hover:bg-surface-container-high"
+                     [style.background]="directCallTarget === contact ? 'rgba(6,182,212,0.05)' : ''"
+                     (click)="directCallTarget = contact">
+                  <div class="w-9 h-9 rounded-full bg-neon-cyan/10 flex items-center justify-center text-neon-cyan font-bold text-sm flex-shrink-0">
+                    {{ contact.charAt(0).toUpperCase() }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-medium text-on-surface truncate">{{ contact }}</div>
+                    <div class="text-xs text-on-surface-variant">Available</div>
+                  </div>
+                  <button
+                    (click)="directCallTarget = contact; placeDirectCall(); $event.stopPropagation()"
+                    [disabled]="state() !== 'idle'"
+                    class="w-8 h-8 rounded-full bg-neon-cyan/10 flex items-center justify-center text-neon-cyan hover:bg-neon-cyan/20 transition disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0">
+                    <span class="material-symbols-outlined text-base">call</span>
+                  </button>
+                </div>
+              }
+            } @else {
+              <div class="text-center py-6 text-on-surface-variant/60 text-sm">
+                <span class="material-symbols-outlined text-2xl mb-1 block">person_search</span>
+                No contacts found
+              </div>
+            }
+          </div>
+
+          <!-- Call Action -->
+          <div class="p-3 border-t border-outline-variant/20">
+            @if (outgoingCallStatus()) {
+              <div class="mb-2 px-3 py-2 rounded-lg bg-surface-container-low text-xs text-on-surface-variant text-center">
+                {{ outgoingCallStatus() }}
+              </div>
+            }
+            <button
+              (click)="placeDirectCall()"
+              [disabled]="state() !== 'idle' || !directCallTarget.trim()"
+              class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neon-cyan text-surface text-sm font-semibold transition hover:bg-neon-cyan/90 disabled:opacity-40 disabled:cursor-not-allowed">
+              <span class="material-symbols-outlined text-base">call</span>
+              {{ directCallTarget.trim() ? 'Call ' + directCallTarget : 'Select a contact' }}
+            </button>
+          </div>
+        </aside>
+      }
 
       <!-- Search Overlay -->
       @if (state() === 'searching') {
@@ -136,10 +210,15 @@ interface DirectCallConfig {
       }
 
       @if (incomingCall()) {
-        <div class="absolute inset-0 z-40 flex items-center justify-center bg-black/65 backdrop-blur-sm mt-16">
-          <div class="glass p-6 w-full max-w-md mx-4 text-center">
+        <div class="absolute inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-lg mt-16">
+          <div class="glass p-6 w-full max-w-md mx-4 text-center border border-neon-cyan/20 shadow-[0_0_40px_rgba(6,182,212,0.18)]">
+            <div class="flex items-center justify-center mb-4">
+              <div class="w-24 h-24 rounded-full bg-neon-cyan/10 border-2 border-neon-cyan/30 flex items-center justify-center animate-pulse">
+                <span class="material-symbols-outlined text-5xl text-neon-cyan">call</span>
+              </div>
+            </div>
             <h3 class="font-display font-bold text-headline-sm text-on-surface mb-2">Incoming Call</h3>
-            <p class="text-on-surface-variant mb-6">
+            <p class="text-on-surface-variant mb-6 text-body-md">
               {{ incomingCall()?.fromUsername }} is calling you.
             </p>
             <div class="flex items-center justify-center gap-3">
@@ -158,29 +237,6 @@ interface DirectCallConfig {
 
       <!-- Main Video Area -->
       <div class="flex-1 flex flex-col relative min-h-0">
-        @if (directCallConfig().enabled) {
-          <div class="px-2 md:px-4 pt-2 md:pt-3">
-            <div class="glass p-3 flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
-              <div class="text-label-sm text-on-surface-variant md:min-w-[180px]">
-                Direct Call Access Enabled
-              </div>
-              <input
-                [(ngModel)]="directCallTarget"
-                [disabled]="state() !== 'idle'"
-                placeholder="Enter username to call"
-                class="flex-1 px-3 py-2 rounded-lg bg-surface-container-low border border-outline-variant/30 text-on-surface placeholder:text-outline focus:outline-none focus:border-neon-cyan/50 disabled:opacity-50" />
-              <button
-                (click)="placeDirectCall()"
-                [disabled]="state() !== 'idle' || !directCallTarget.trim()"
-                class="px-4 py-2 rounded-lg bg-neon-cyan/20 border border-neon-cyan/30 text-neon-cyan hover:bg-neon-cyan/30 transition-all disabled:opacity-40">
-                Call
-              </button>
-            </div>
-            @if (outgoingCallStatus()) {
-              <div class="text-label-sm text-on-surface-variant mt-1 px-1">{{ outgoingCallStatus() }}</div>
-            }
-          </div>
-        }
 
         <!-- Videos Grid -->
         <div class="flex-1 relative p-2 md:p-4 min-h-0">
@@ -219,6 +275,13 @@ interface DirectCallConfig {
             }
             <!-- Video gradient mask -->
             <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-container-lowest/80 to-transparent"></div>
+
+            @if (notificationMessage()) {
+              <div class="absolute top-4 left-1/2 -translate-x-1/2 rounded-full bg-surface-container-high/95 border border-neon-cyan/20 px-4 py-2 text-sm text-on-surface shadow-lg shadow-neon-cyan/10 flex items-center gap-2">
+                <span class="material-symbols-outlined text-base text-neon-cyan">mail</span>
+                {{ notificationMessage() }}
+              </div>
+            }
           </div>
 
           <!-- Local Video (PiP overlay) -->
@@ -282,6 +345,15 @@ interface DirectCallConfig {
             </button>
           }
 
+          <!-- Direct Call Panel Toggle -->
+          @if (directCallConfig().enabled) {
+            <button (click)="showDirectCallPanel.set(!showDirectCallPanel())"
+                    class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all"
+                    [class]="showDirectCallPanel() ? 'bg-neon-cyan/20 border border-neon-cyan/40 text-neon-cyan' : 'bg-surface-container-high border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-highest'">
+              <span class="material-symbols-outlined text-[20px] md:text-[24px]">contacts</span>
+            </button>
+          }
+
           <!-- Spacer -->
           <div class="w-px h-6 md:h-8 bg-outline-variant/30 mx-0.5 md:mx-1"></div>
 
@@ -295,10 +367,15 @@ interface DirectCallConfig {
           }
 
           <!-- Chat Sidebar Toggle (mobile) -->
-          <button (click)="showChat.set(!showChat())"
-                  class="md:hidden w-10 h-10 rounded-xl bg-surface-container-high border border-outline-variant/30
+          <button (click)="toggleChat()"
+                  class="relative md:hidden w-10 h-10 rounded-xl bg-surface-container-high border border-outline-variant/30
                          flex items-center justify-center text-on-surface hover:bg-surface-container-highest transition-all">
             <span class="material-symbols-outlined text-[20px]">chat</span>
+            @if (unreadMessages() > 0) {
+              <span class="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-error text-surface text-[10px] font-semibold">
+                {{ unreadMessages() > 9 ? '9+' : unreadMessages() }}
+              </span>
+            }
           </button>
         </div>
       </div>
@@ -410,9 +487,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   peerName = signal('Stranger');
   peerUserId = '';
   directCallConfig = signal<DirectCallConfig>({ enabled: false, allowedUsernames: [] });
+  showDirectCallPanel = signal(true);
   directCallTarget = '';
+  userSearch = signal('');
   outgoingCallStatus = signal('');
   incomingCall = signal<IncomingCallEvent | null>(null);
+  unreadMessages = signal(0);
+  notificationMessage = signal('');
+  private notificationTimer: ReturnType<typeof setTimeout> | null = null;
   private hasStartupPreference = false;
 
   private subs: Subscription[] = [];
@@ -498,6 +580,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
           isOwn: false,
           timestamp: new Date(msg.timestamp),
         }]);
+        this.addIncomingMessageNotification();
       })
     );
 
@@ -552,6 +635,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
         this.incomingCall.set(call);
         this.startRingtone();
+        this.showBrowserNotification('Incoming call', `${call.fromUsername} is calling you.`);
       })
     );
 
@@ -585,6 +669,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.socketService.endSession();
     if (this.typingTimeout) clearTimeout(this.typingTimeout);
     this.clearSearchRelaxTimer();
+    if (this.notificationTimer) {
+      clearTimeout(this.notificationTimer);
+      this.notificationTimer = null;
+    }
   }
 
   startSearch(): void {
@@ -716,6 +804,66 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
+  filteredContacts(): string[] {
+    const query = this.userSearch().trim().toLowerCase();
+    return this.directCallConfig().allowedUsernames.filter(username =>
+      !query || username.toLowerCase().includes(query)
+    );
+  }
+
+  toggleChat(): void {
+    this.showChat.set(!this.showChat());
+    if (this.showChat()) {
+      this.clearUnreadCount();
+    }
+  }
+
+  private clearUnreadCount(): void {
+    this.unreadMessages.set(0);
+    this.notificationMessage.set('');
+    if (this.notificationTimer) {
+      clearTimeout(this.notificationTimer);
+      this.notificationTimer = null;
+    }
+  }
+
+  private addIncomingMessageNotification(): void {
+    if (this.showChat()) {
+      return;
+    }
+    this.unreadMessages.update(value => value + 1);
+    this.notificationMessage.set(`New message from ${this.peerName()}`);
+    if (this.notificationTimer) {
+      clearTimeout(this.notificationTimer);
+    }
+    this.notificationTimer = setTimeout(() => {
+      if (!this.showChat()) {
+        this.notificationMessage.set('');
+      }
+      this.notificationTimer = null;
+    }, 3000);
+    this.showBrowserNotification('New chat message', `${this.peerName()} sent a message.`);
+  }
+
+  private showBrowserNotification(title: string, body: string): void {
+    if (!('Notification' in window)) {
+      return;
+    }
+
+    if (Notification.permission === 'granted') {
+      new Notification(title, { body });
+      return;
+    }
+
+    if (Notification.permission !== 'denied') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          new Notification(title, { body });
+        }
+      });
+    }
+  }
+
   private ringPulse(): void {
     try {
       const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
@@ -737,11 +885,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
       gain.connect(ctx.destination);
 
       const now = ctx.currentTime;
-      gain.gain.exponentialRampToValueAtTime(0.15, now + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+      gain.gain.exponentialRampToValueAtTime(1.0, now + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
 
       osc.start(now);
-      osc.stop(now + 0.36);
+      osc.stop(now + 0.72);
     } catch {
       // Ignore ringing issues on browsers that block autoplay audio contexts.
     }

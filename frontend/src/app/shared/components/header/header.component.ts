@@ -18,7 +18,7 @@ import { SocketService } from '../../../core/services/socket.service';
               <span class="material-symbols-outlined text-surface text-xl">videocam</span>
             </div>
             <span class="font-display font-bold text-lg tracking-tight text-on-surface group-hover:text-neon-cyan transition-colors">
-              AnonConnect
+              IMegle
             </span>
           </a>
 
